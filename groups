@@ -1,0 +1,4 @@
+# UUID                                                                   	Group Name
+#
+global:Project-Owners                                                    	Project Owners
+ldap:cn=gerrit-releng-builder-committers,ou=Groups,dc=opendaylight,dc=org	ldap/gerrit-releng-builder-committers
