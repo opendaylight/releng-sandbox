@@ -1,4 +1,6 @@
 # UUID                                                                   	Group Name
 #
+30d21c93ce3b3011291a5b95ca2063a4eae1b118                                 	Non-Interactive Users
 global:Project-Owners                                                    	Project Owners
+global:Registered-Users                                                  	Registered Users
 ldap:cn=gerrit-releng-builder-committers,ou=Groups,dc=opendaylight,dc=org	ldap/gerrit-releng-builder-committers
