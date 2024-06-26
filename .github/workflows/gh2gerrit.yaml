@@ -104,6 +104,11 @@ jobs:
           repository: "opendaylight/releng-sandbox"
       # repository: ${{ inputs.GITHUB_ORG }}/${{ inputs.GITHUB_PROJECT }}
 
+      - name: View the last few commits in git log
+        run: |
+          cd $GITHUB_WORKSPACE/${{ inputs.GERRIT_PROJECT }}-${{ inputs.GERRIT_BRANCH }}
+          git log --graph --all --decorate --pretty=oneline -n10
+
       # - name: Get PR number
       #   id: pr
       #   run: echo "::set-output name=pull_request_number::$(echo "${{ github.event.head_commit.message }}" | awk -F"[\#)]" '{print $2}')"
@@ -114,4 +119,10 @@ jobs:
         run: |
           echo "PR Number: ${{ steps.pr.outputs.pull_request_number }}"
           export PR_NUMBER="${{ github.event.pull_request.number || github.event.issue.number }}"
-          echo $PR_NUMBER
+          echo $PR_NUMBER >> "$GITHUB_ENV"
+
+      - name: Download the PR .patch and .diff locally
+        run: |
+          wget -q https://github.com/opendaylight/releng-sandbox/pull/${{ github.event.pull_request.number }}.patch
+          cat ${{ github.event.pull_request.number }}.patch
+          ${{ github.event.pull_request.number }}.diff
