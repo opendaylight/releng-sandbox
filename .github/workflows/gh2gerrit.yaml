@@ -125,4 +125,4 @@ jobs:
         run: |
           wget -q https://github.com/opendaylight/releng-sandbox/pull/${{ github.event.pull_request.number }}.patch
           cat ${{ github.event.pull_request.number }}.patch
-          ${{ github.event.pull_request.number }}.diff
+          cat ${{ github.event.pull_request.number }}.diff
