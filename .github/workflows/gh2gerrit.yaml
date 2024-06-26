@@ -104,12 +104,14 @@ jobs:
           repository: "opendaylight/releng-sandbox"
       # repository: ${{ inputs.GITHUB_ORG }}/${{ inputs.GITHUB_PROJECT }}
 
-      - name: Get PR number
-        id: pr
-        run: echo "::set-output name=pull_request_number::$(echo "${{ github.event.head_commit.message }}" | awk -F"[\#)]" '{print $2}')"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Get PR number
+      #   id: pr
+      #   run: echo "::set-output name=pull_request_number::$(echo "${{ github.event.head_commit.message }}" | awk -F"[\#)]" '{print $2}')"
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Download the PR
-      #   run:   echo ::set-env name=PULL_NUMBER::$(echo "$GITHUB_REF" | awk -F / '{print $3}')
-      #   shell: bash
+      - name: Print the PR number
+        run: |
+          echo "PR Number: ${{ steps.pr.outputs.pull_request_number }}"
+          export PR_NUMBER="${{ github.event.pull_request.number || github.event.issue.number }}"
+          echo $PR_NUMBER
