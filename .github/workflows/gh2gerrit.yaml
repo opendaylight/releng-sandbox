@@ -1,0 +1,115 @@
+---
+name: Github PR to Gerrit Change request
+
+# yamllint disable-line rule:truthy
+on:
+  pull_request:
+    types: [opened, reopened]
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      GERRIT_BRANCH:
+        description: "Branch that change is against"
+        required: true
+        type: string
+      GERRIT_CHANGE_ID:
+        description: "The ID for the change"
+        required: true
+        type: string
+      GERRIT_CHANGE_NUMBER:
+        description: "The Gerrit number"
+        required: true
+        type: string
+      GERRIT_CHANGE_URL:
+        description: "URL to the change"
+        required: true
+        type: string
+      GERRIT_EVENT_TYPE:
+        description: "Type of Gerrit event"
+        required: true
+        type: string
+      GERRIT_PATCHSET_NUMBER:
+        description: "The patch number for the change"
+        required: true
+        type: string
+      GERRIT_PATCHSET_REVISION:
+        description: "The revision sha"
+        required: true
+        type: string
+      GERRIT_PROJECT:
+        description: "Project in Gerrit"
+        required: true
+        type: string
+      GERRIT_REFSPEC:
+        description: "Gerrit refspec of change"
+        required: true
+        type: string
+      TARGET_REPO:
+        # yamllint disable-line rule:line-length
+        description: "The target GitHub repository needing the required workflow"
+        required: false
+        default: "opendaylight/releng-sandbox"
+        type: string
+
+env:
+  TEST: "1.8.6"
+
+concurrency:
+  group: ${{ github.event.inputs.GERRIT_CHANGE_ID || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gerrit Checkout
+        # yamllint disable-line rule:line-length
+        uses: lfit/checkout-gerrit-change-action@54d751e8bd167bc91f7d665dabe33fae87aaaa63  # v0.9
+        with:
+          gerrit-refspec: ${{ inputs.GERRIT_REFSPEC }}
+          gerrit-project: ${{ inputs.GERRIT_PROJECT }}
+          gerrit-url: ${{ vars.GERRIT_URL }}
+          delay: "0s"
+          submodules: "false"
+      - name: Download actionlint
+        id: get_actionlint
+        # yamllint disable-line rule:line-length
+        run: bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+        shell: bash
+      - name: Check workflow files
+        run: ${{ steps.get_actionlint.outputs.executable }} -color
+        shell: bash
+
+  gh2gerrit-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v4
+        id: setup-python
+        with:
+          python-version: "3.11"
+      - name: Install git-review
+        run: |
+          python -m pip install --upgrade pip
+          pip install "git-review==2.3.1"
+          git review --version
+
+      - name: Clone Github repo with the PR
+        uses: actions/checkout@v4
+        with:
+          ssh-user: ${{ inputs.GERRIT_SSH_USER }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: ${{ inputs.GERRIT_PROJECT }}-${{ inputs.GERRIT_BRANCH }}
+          repository: "opendaylight/releng-sandbox"
+      # repository: ${{ inputs.GITHUB_ORG }}/${{ inputs.GITHUB_PROJECT }}
+
+      - name: Get PR number
+        id: pr
+        run: echo "::set-output name=pull_request_number::$(echo "${{ github.event.head_commit.message }}" | awk -F"[\#)]" '{print $2}')"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download the PR
+        run:   echo ::set-env name=PULL_NUMBER::$(echo "$GITHUB_REF" | awk -F / '{print $3}')
+        shell: bash
