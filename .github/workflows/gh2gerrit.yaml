@@ -117,12 +117,30 @@ jobs:
 
       - name: Print the PR number
         run: |
+          set -x
           echo "PR Number: ${{ steps.pr.outputs.pull_request_number }}"
           export PR_NUMBER="${{ github.event.pull_request.number || github.event.issue.number }}"
-          echo $PR_NUMBER >> "$GITHUB_ENV"
+          echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_ENV"
+          # Set a temp PR to test with ACT
+          if [[ $PR_NUMBER == '' ]]; then
+              echo "PR_NUMBER=1" >> "$GITHUB_ENV"
+          fi
 
       - name: Download the PR .patch and .diff locally
+        if: env.PR_NUMBER != ''
         run: |
-          wget -q https://github.com/opendaylight/releng-sandbox/pull/${{ github.event.pull_request.number }}.patch
-          cat ${{ github.event.pull_request.number }}.patch
-          cat ${{ github.event.pull_request.number }}.diff
+          set -x
+          wget -q https://github.com/opendaylight/releng-sandbox/pull/${{ env.PR_NUMBER }}.patch
+          wget -q https://github.com/opendaylight/releng-sandbox/pull/${{ env.PR_NUMBER }}.diff
+
+          cat ${{ env.PR_NUMBER }}.patch
+          cat ${{ env.PR_NUMBER }}.diff
+
+      - name: Apply patch on local repo
+        if: env.PR_NUMBER != ''
+        run: |
+          set -x
+          cd $GITHUB_WORKSPACE/${{ inputs.GERRIT_PROJECT }}-${{ inputs.GERRIT_BRANCH }}
+          git status
+          git apply  $GITHUB_WORKSPACE/${{ env.PR_NUMBER }}.patch
+          git diff
