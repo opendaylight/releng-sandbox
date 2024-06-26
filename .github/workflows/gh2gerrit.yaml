@@ -98,7 +98,7 @@ jobs:
       - name: Clone Github repo with the PR
         uses: actions/checkout@v4
         with:
-          ssh-user: ${{ inputs.GERRIT_SSH_USER }}
+          ssh-user: ${{ vars.GERRIT_SSH_USER_G2G }}
           ref: ${{ github.event.pull_request.head.sha }}
           path: ${{ inputs.GERRIT_PROJECT }}-${{ inputs.GERRIT_BRANCH }}
           repository: "opendaylight/releng-sandbox"
