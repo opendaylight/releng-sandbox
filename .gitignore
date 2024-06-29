@@ -18,3 +18,11 @@ target/
 .tox/
 __pycache__/
 *.pyc
+
+.inputs
+.vars
+.secrets
+
+my.inputs
+my.vars
+my.secrets
