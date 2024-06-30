@@ -76,9 +76,8 @@ jobs:
         with:
           ssh-user: ${{ vars.GERRIT_SSH_USER_G2G }}
           ref: ${{ github.event.pull_request.head.sha }}
-          path: "${{ vars.GERRIT_PROJECT }}-${{ vars.GERRIT_BRANCH }}"
-          repository: "${{ vars.GERRIT_ORG }}/${{ vars.GH_PROJECT}}"
-      # repository: ${{ inputs.GITHUB_ORG }}/${{ inputs.GITHUB_PROJECT }}
+          path: "${{ vars.GH_PROJECT }}-${{ vars.GERRIT_BRANCH }}"
+          repository: "${{ vars.ORGANIZATION }}/${{ vars.GH_PROJECT}}"
 
       - name: View the last few commits in git log
         run: |
