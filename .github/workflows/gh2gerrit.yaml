@@ -4,7 +4,7 @@ name: Github PR to Gerrit Change request
 # yamllint disable-line rule:truthy
 on:
   pull_request:
-    types: [opened, reopened]
+    types: [opened, synchronize, edited, reopened]
     branches:
       - master
       - main
