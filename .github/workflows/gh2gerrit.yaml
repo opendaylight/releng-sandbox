@@ -150,7 +150,7 @@ jobs:
           echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_ENV"
           # Set a temp PR to test with ACT
           if [[ $PR_NUMBER == '' ]]; then
-              echo "PR_NUMBER=${{vars.PR_NUM}}" >> "$GITHUB_ENV"
+              echo "PR_NUMBER=${{ vars.PR_NUM }}" >> "$GITHUB_ENV"
           fi
 
       - name: Download the PR .patch and .diff locally
