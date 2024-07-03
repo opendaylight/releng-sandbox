@@ -8,30 +8,6 @@ on:
     branches:
       - master
       - main
-  workflow_call:
-    inputs:
-      GERRIT_BRANCH:
-        description: "Branch that change is against"
-        required: true
-        type: string
-      GERRIT_CHANGE_ID:
-        description: "The ID for the change"
-        required: true
-        type: string
-      GERRIT_PROJECT:
-        description: "Project in Gerrit"
-        required: true
-        type: string
-      REVIEWERS_EMAIL:
-        # yamllint disable-line rule:line-length
-        description: "Comma Separated email list of reviewers"
-        required: false
-        default: ""
-        type: string
-    secrets:
-      GERRIT_SSH_PRIVKEY_G2G:
-        description: "Private SSH key used for pushing Gerrit reviews"
-        required: true
 
 concurrency:
   group: ${{ github.run_id }}
@@ -62,7 +38,7 @@ jobs:
   gh2gerrit-push:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         id: setup-python
         with:
           python-version: "3.11"
