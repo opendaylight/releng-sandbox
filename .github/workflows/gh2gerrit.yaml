@@ -104,7 +104,7 @@ jobs:
         run: |
           set -x
           cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
-          git ---no-pager log --graph --all --decorate --pretty=oneline -n10
+          git --no-pager log --graph --all --decorate --pretty=oneline -n10
 
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@d4fffb50872869abe2d9a9098a6d9c5aa7d16be4 # v2.7.0
