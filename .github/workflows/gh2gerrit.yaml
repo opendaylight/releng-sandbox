@@ -168,7 +168,7 @@ jobs:
           # TODO: Get number of commits in the patch file and set var in env PR_COMMIT_NUM
 
       - name: Apply patch on local repo
-        if: ! cancelled() && hashFiles('${{ env.PR_NUMBER }}.patch') != ''
+        if: ( ! cancelled() && hashFiles('${{ env.PR_NUMBER }}.patch') != '' )
         shell: bash
         run: |
           set -x
@@ -251,7 +251,7 @@ jobs:
           # echo "GERRIT_CHANGE_ID=Iafa61d4b861941624c4c44b0fde21f534a7344ad" >> "$GITHUB_ENV"
 
       - name: Set fake change-Id to with nektos-act
-        if: steps.submit.outputs.gerrit_change_id != '' && env.ACT == 'true'
+        if: ( steps.submit.outputs.gerrit_change_id != '' && env.ACT == 'true' )
         run: |
           set -x
           echo "GERRIT_CHANGE_ID=Iafa61d4b861941624c4c44b0fde21f534a7344ad" >> "$GITHUB_ENV"
