@@ -104,7 +104,7 @@ jobs:
         run: |
           set -x
           cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
-          git log --graph --all --decorate --pretty=oneline -n10
+          git ---no-pager log --graph --all --decorate --pretty=oneline -n10
 
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@d4fffb50872869abe2d9a9098a6d9c5aa7d16be4 # v2.7.0
@@ -168,15 +168,25 @@ jobs:
           # TODO: Get number of commits in the patch file and set var in env PR_COMMIT_NUM
 
       - name: Apply patch on local repo
-        if: env.PR_NUMBER != ''
+        if: ! cancelled() && hashFiles('${{ env.PR_NUMBER }}.patch') != ''
         shell: bash
         run: |
           set -x
 
           cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
 
+          if [[ ! ${{ env.ACT }} ]]; then
+              git --no-pager log -n2 -p
+          fi
+
           # Apply the patch on the HEAD
           git am --show-current-patch=diff "$GITHUB_WORKSPACE/${{ env.PR_NUMBER }}.patch"
+
+          if [ $? -ne 0 ]; then
+              git --no-pager log -n2 -p
+              git --no-pager diff
+              git status
+          fi
 
           # Create a commit-id from all the PR
           echo "Create a commit from all the PR"
