@@ -21,8 +21,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           ssh-user: ${{ vars.GERRIT_SSH_USER_G2G }}
-          ref: ${{ github.event.pull_request.head.sha }}
-          repository: "${{ github.repository }}"
+          # ref: ${{ github.event.pull_request.head.sha }}
+          # repository: "${{ github.repository }}"
       - name: Download actionlint
         id: get_actionlint
         # yamllint disable-line rule:line-length
@@ -57,6 +57,7 @@ jobs:
           project_repo_gerrit="${project_repo_github//-//}"
           echo "PROJECT_REPO_GERRIT=${project_repo_gerrit}" >> "$GITHUB_ENV"
           echo "PROJECT_REPO_GITHUB=${project_repo_github}" >> "$GITHUB_ENV"
+          # TODO: Read repo info from .gitreview file
 
       - name: Set env GITHUB branch in env
         shell: bash
@@ -68,9 +69,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           ssh-user: ${{ vars.GERRIT_SSH_USER_G2G }}
-          ref: ${{ github.event.pull_request.head.sha }}
           path: "${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
-          repository: "${{ github.repository }}"
+          # ref: ${{ github.event.pull_request.head.sha }}
+          # repository: "${{ github.repository }}"
 
       - name: Print last X commits in the git log
         if: env.ACT == 'true'
@@ -147,7 +148,7 @@ jobs:
 
           cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
 
-          if [[ ! ${{ env.ACT }} ]]; then
+          if [[ ${{ env.ACT }} ]]; then
               git --no-pager log -n2 -p
           fi
 
