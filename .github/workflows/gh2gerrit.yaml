@@ -13,9 +13,6 @@ concurrency:
   group: ${{ github.run_id }}
   cancel-in-progress: true
 
-env:
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 jobs:
   actionlint:
     runs-on: ubuntu-latest
@@ -121,7 +118,6 @@ jobs:
       - name: Print the PR number
         run: |
           set -x
-          echo "PR Number: ${{ steps.pr.outputs.pull_request_number }}"
           export PR_NUMBER="${{ github.event.pull_request.number || github.event.issue.number }}"
           echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_ENV"
           # Set a temp PR to test with ACT
@@ -156,7 +152,7 @@ jobs:
           fi
 
           # Apply the patch on the HEAD
-          git am --show-current-patch=diff "$GITHUB_WORKSPACE/${{ env.PR_NUMBER }}.patch"
+          # git am --show-current-patch=diff "$GITHUB_WORKSPACE/${{ env.PR_NUMBER }}.patch"
 
           if [ $? -ne 0 ]; then
               git --no-pager log -n2 -p
@@ -164,8 +160,7 @@ jobs:
               git status
           fi
 
-          # Create a commit-id from all the PR
-          echo "Create a commit from all the PR"
+          # Create a Change-id from all the PR
 
           # Capture the last commit HEAD
           git rev-parse HEAD > last-head-commit-id.txt
