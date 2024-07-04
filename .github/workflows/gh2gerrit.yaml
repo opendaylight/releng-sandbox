@@ -141,7 +141,7 @@ jobs:
           # TODO: Get number of commits in the patch file and set var in env PR_COMMIT_NUM
 
       - name: Apply patch on local repo
-        if: ( ! cancelled() && hashFiles('${{ env.PR_NUMBER }}.patch') != '' )
+        if: hashFiles('${{ env.PR_NUMBER }}.patch') != '' )
         shell: bash
         run: |
           set -x
