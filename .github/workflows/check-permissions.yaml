@@ -1,0 +1,23 @@
+name: Action Sample Workflow
+# Run workflow when a new pull request is opened
+on: [pull_request]
+jobs:
+  check_user_permission:
+    runs-on: ubuntu-latest
+    name: A job to check user's permission level
+    steps:
+      # Check for write permission
+      - name: Check user permission
+        id: check
+        uses: scherermichael-oss/action-has-permission@master
+        with:
+          required-permission: write
+        env:
+          GITHUB_TOKEN: $
+      # Use the output from the `check` step
+      - name: Run only if user has sufficient permissions
+        if: steps.check.outputs.has-permission
+        run: echo "Congratulations! Your permissions to access the repository are sufficient."
+      - name: Run only if user has NOT sufficient permissions
+        if: "! steps.check.outputs.has-permission"
+        run: echo "Sorry! Your permissions are insufficient."
