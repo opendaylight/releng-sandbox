@@ -147,6 +147,8 @@ jobs:
 
           num_commits="$(gh pr view ${{ env.PR_NUMBER }} --json commits | jq '.[] | length')"
           echo "PR_COMMITS=$num_commits" >> "$GITHUB_ENV"
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Apply patch on local repo
         if: hashFiles('${{ env.PR_NUMBER }}.patch') != ''
