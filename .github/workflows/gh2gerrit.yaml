@@ -148,18 +148,12 @@ jobs:
 
           cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
 
-          if [[ ${{ github.event.act }} ]]; then
-              git --no-pager log -n2 -p
-          fi
-
           # Apply the patch on the HEAD
           # git am --show-current-patch=diff "$GITHUB_WORKSPACE/${{ env.PR_NUMBER }}.patch"
 
-          if [ $? -ne 0 ]; then
-              git --no-pager log -n2 -p
-              git --no-pager diff
-              git status
-          fi
+          git --no-pager log -n2 -p
+          git --no-pager diff
+          git status
 
           # Create a Change-id from all the PR
 
