@@ -145,6 +145,8 @@ jobs:
         run: |
           set -x
 
+          cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
+
           num_commits="$(gh pr view ${{ env.PR_NUMBER }} --json commits | jq '.[] | length')"
           echo "PR_COMMITS=$num_commits" >> "$GITHUB_ENV"
         env:
