@@ -141,7 +141,6 @@ jobs:
           # TODO: Get number of commits in the patch file and set var in env PR_COMMIT_NUM
 
       - name: Get the number of commits in the pull-request
-        uses: actions/github-script@v6
         if: ${{ github.event_name == 'pull_request_target' }}
         bash: shell
         run: |
