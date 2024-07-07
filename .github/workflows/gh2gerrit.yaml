@@ -148,7 +148,7 @@ jobs:
 
           cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
 
-          if [[ ${{ env.ACT }} ]]; then
+          if [[ ${{ github.event.act }} ]]; then
               git --no-pager log -n2 -p
           fi
 
