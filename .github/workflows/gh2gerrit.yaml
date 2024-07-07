@@ -131,7 +131,7 @@ jobs:
         run: |
           set -x
 
-          patch_path="${{ vars.ORGANIZATION }}/${{ env.PROJECT_REPO_GITHUB }}/pull/${{ env.PR_NUMBER }}.patch"
+          patch_path="${{ vars.ORGANIZ$(gh pr view 4 --json commits | jq '.[] | length')ATION }}/${{ env.PROJECT_REPO_GITHUB }}/pull/${{ env.PR_NUMBER }}.patch"
           wget -q "https://github.com/${patch_path}"
 
           if [[ -f "${{ env.PR_NUMBER }}.patch" ]]; then
@@ -139,6 +139,16 @@ jobs:
           fi
           # cat ${{ env.PR_NUMBER }}.patch
           # TODO: Get number of commits in the patch file and set var in env PR_COMMIT_NUM
+
+      - name: Get the number of commits in the pull-request
+        uses: actions/github-script@v6
+        if: ${{ github.event_name == 'pull_request_target' }}
+        bash: shell
+        run: |
+          set -x
+
+          num_commits="$(gh pr view ${{ env.PR_NUMBER }} --json commits | jq '.[] | length')"
+          echo "PR_COMMITS=$num_commits" >> "$GITHUB_ENV"
 
       - name: Apply patch on local repo
         if: hashFiles('${{ env.PR_NUMBER }}.patch') != ''
@@ -161,7 +171,7 @@ jobs:
           git rev-parse HEAD > last-head-commit-id.txt
 
           # Capture and check for signed-of-by and Change-Id
-          git reset --soft HEAD~2
+          git reset --soft "HEAD~${{ env.PR_COMMITS }}"
 
           # Check if change-id is present in pull request and process this conditionally
           git log --format=%B --reverse HEAD..HEAD@{1} | grep -E "^(Change-Id)" > Change-ID.txt || true
