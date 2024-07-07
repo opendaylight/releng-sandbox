@@ -1,6 +1,13 @@
 name: Action Sample Workflow
 # Run workflow when a new pull request is opened
-on: [pull_request]
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, edited, reopened]
+    branches:
+      - master
+      - main
+
 jobs:
   check_user_permission:
     runs-on: ubuntu-latest
