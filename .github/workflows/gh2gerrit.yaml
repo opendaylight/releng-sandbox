@@ -131,7 +131,7 @@ jobs:
         run: |
           set -x
 
-          patch_path="${{ vars.ORGANIZ$(gh pr view 4 --json commits | jq '.[] | length')ATION }}/${{ env.PROJECT_REPO_GITHUB }}/pull/${{ env.PR_NUMBER }}.patch"
+          patch_path="${{ vars.ORGANIZATION }}/${{ env.PROJECT_REPO_GITHUB }}/pull/${{ env.PR_NUMBER }}.patch"
           wget -q "https://github.com/${patch_path}"
 
           if [[ -f "${{ env.PR_NUMBER }}.patch" ]]; then
