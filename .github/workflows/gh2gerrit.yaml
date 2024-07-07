@@ -142,7 +142,6 @@ jobs:
 
       - name: Get the number of commits in the pull-request
         if: ${{ github.event_name == 'pull_request_target' }}
-        bash: shell
         run: |
           set -x
 
