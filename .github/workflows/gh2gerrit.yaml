@@ -291,16 +291,11 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `:info:
+              body: `The pull-request PR-${{ env.PR_NUMBER }} is submitted to Gerrit [${{ env.ORGANIZATION }}](https://${{ vars.GERRIT_SERVER }})!
 
-                The pull-request PR-${{ env.PR_NUMBER }} is submitted to Gerrit
-                [${{ env.ORGANIZATION }}](https://${{ vars.GERRIT_SERVER }})!
+To follow up on the change visit: [${{ env.GERRIT_CHANGE_REQUEST_NUMBER }}](${{ env.GERRIT_CHANGE_REQUEST_URL }})
 
-                To follow up on the change visit: [${{ env.GERRIT_CHANGE_REQUEST_NUMBER }}](${{ env.GERRIT_CHANGE_REQUEST_URL }})
-
-                NOTE: The pull-request PR-${{ env.PR_NUMBER }} will be closed,
-                re-opening the pull-request will not update the same commit
-                and may result in duplicate changes on Gerrit.`
+NOTE: The pull-request PR-${{ env.PR_NUMBER }} will be closed, re-opening the pull-request will not update the same commit and may result in duplicate changes on Gerrit.`
 
       - name: Close pull-request
         run: gh pr close --comment "Auto-closing pull request" --delete-branch "${{ env.PR_NUMBER }}"
