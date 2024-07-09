@@ -54,6 +54,8 @@ jobs:
         shell: bash
         run: |
           set -x
+
+          cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
           project_repo_gerrit_git=$(grep -E "project" .gitreview | cut -d "=" -f2)
           # # change any '-' to '/' and remove owner name
           project_repo_gerrit="${project_repo_gerrit_git//.*}"
