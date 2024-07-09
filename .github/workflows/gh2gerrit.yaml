@@ -159,9 +159,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request_target' }}
         run: |
           set -x
-
           cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
-
           num_commits="$(gh pr view ${{ env.PR_NUMBER }} --json commits | jq '.[] | length')"
           echo "PR_COMMITS=$num_commits" >> "$GITHUB_ENV"
         env:
@@ -298,7 +296,11 @@ jobs:
             })
 
       - name: Close pull-request
-        run: gh pr close --comment "Auto-closing pull request" --delete-branch "${{ env.PR_NUMBER }}"
+        if: ${{ github.event_name == 'pull_request_target' }}
+        run: |
+          set -x
+          cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
+          gh pr close --comment "Auto-closing pull request" --delete-branch "${{ env.PR_NUMBER }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
