@@ -229,7 +229,7 @@ jobs:
           cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
 
           # If the reviewers email is unset/empty then use a default
-          reviewers_email=${REVIEWERS_EMAIL:-"${{ vars.GERRIT_SSH_USER_G2G}}@${{ vars.GERRIT_SERVER}}"}
+          reviewers_email=${REVIEWERS_EMAIL:-"${{ vars.GERRIT_SSH_USER_G2G_EMAIL }}"
 
           echo "git review .... inprogress"
           git review --yes -t "GH-PR-${{ env.PR_NUMBER }}" --reviewers "$reviewers_email"
