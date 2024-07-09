@@ -77,13 +77,6 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
           # repository: "${{ github.repository }}"
-      - run: |
-          cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
-          for commit in $(git rev-list ${{ github.base_ref }}..${{ github.head_ref }}); do
-              git checkout $commit
-              echo "commit-id: $commit"
-          done
-          git --no-pager log --graph --all --decorate --pretty=oneline -n3
 
       - name: Print last X commits in the git log
         if: env.ACT == 'true'
@@ -128,7 +121,7 @@ jobs:
           # Init gerrit repo
           git review -s -v
 
-      - name: Print the PR number
+      - name: Print the pull-request
         run: |
           set -x
           export PR_NUMBER="${{ github.event.pull_request.number || github.event.issue.number }}"
@@ -149,8 +142,6 @@ jobs:
           if [[ -f "${{ env.PR_NUMBER }}.patch" ]]; then
               echo "PR-${{ env.PR_NUMBER }} download successfully"
           fi
-          # cat ${{ env.PR_NUMBER }}.patch
-          # TODO: Get number of commits in the patch file and set var in env PR_COMMIT_NUM
 
       - name: Get the number of commits in the pull-request
         if: ${{ github.event_name == 'pull_request_target' }}
@@ -196,10 +187,11 @@ jobs:
           # Capture the last commit HEAD
           # git rev-parse HEAD > last-head-commit-id.txt
 
-          # Capture and check for signed-of-by and Change-Id
+          # Squash all commits in pull-request into a single commit
           git reset --soft "${{ github.sha }}"
 
-          # Check if change-id is present in pull request and process this conditionally
+          # Check if change-id is present in each commit and use the first one
+          # Capture and check for signed-of-by and Change-Id
           git log -v --format=%B --reverse HEAD..HEAD@{1} | grep -E "^(Change-Id)" > change-ID.txt || true
           git log -v --format=%B --reverse HEAD..HEAD@{1} | grep -E "^(Signed-off-by)" > signed-off-by.txt || true
           git log -v --format=%B --reverse HEAD..HEAD@{1} | grep -Ev "^(Signed-off-by|Change-Id)" > commit-msg.txt
@@ -266,11 +258,14 @@ jobs:
           set -x
 
           # Query for a pre-existing gerrit review to retrive Change-Id
-          query_result=$(ssh -v -p 29418 "${{ vars.GERRIT_SSH_USER_G2G }}@${{ vars.GERRIT_SERVER }}" \
-              gerrit query limit:1 is:open \
-                  --current-patch-set --format=JSON "${{ env.GERRIT_CHANGE_ID }}" | jq -r '.url' | grep https)
-          echo "GERRIT_CHANGE_REQUEST_URL=${query_result}" >> "$GITHUB_ENV"
-          # gerrit query limit:1 owner:self is:open project:"${{ env.PROJECT_REPO_GITHUB }}" \
+          ssh -v -p 29418 "${{ vars.GERRIT_SSH_USER_G2G }}@${{ vars.GERRIT_SERVER }}" \
+                  gerrit query limit:1 owner:self is:open project:"${{ env.PROJECT_REPO_GITHUB }}" \
+                  --current-patch-set --format=JSON "${{ env.GERRIT_CHANGE_ID }}" > query_result.txt
+          query_result_url=$(jq -r '.url | select( . != null )')
+          query_result_number=$(jq -r '.number | select( . != null )')
+
+          echo "GERRIT_CHANGE_REQUEST_URL=${query_result_url}" >> "$GITHUB_ENV"
+          echo "GERRIT_CHANGE_REQUEST_NUMBER=${query_result_number}" >> "$GITHUB_ENV"
 
       - name: PR Comment update CR number
         if: env.GERRIT_CHANGE_REQUEST_URL != ''
@@ -284,20 +279,11 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "PR-${{ env.PR_NUMBER }} pushed Gerrit for review ${{ env.GERRIT_CHANGE_REQUEST_URL }}!"
-            })
-
-      # - name: PR Comment
-      #   uses: actions/github-script@v2
-      #   with:
-      #     github-token: ${{secrets.GITHUB_TOKEN}}
-      #     script: |
-      #       github.issues.createComment({
-      #         issue_number: ${{ github.event.number }},
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         body: ':warning: Have you followed the [contributions guidance](<url_to_contribution_guidance>)? Content PRs should generally be made against the the [source repo](https://github.com/<owner>/<repo>).'
-      #       })
+              body: ":info: The pull-request PR-${{ env.PR_NUMBER }} has been submitted for review to \
+                    [${{ env.PROJECT_REPO_GERRIT }}](https://${{ vars.GERRIT_SERVER }}) \
+                    To follow up on the change visit: [${{ env.GERRIT_CHANGE_REQUEST_NUMBER }}](${{ env.GERRIT_CHANGE_REQUEST_URL }}) \
+                    NOTE: The pull-request PR-${{ env.PR_NUMBER }} will be closed, re-opening the pull-request will \
+                    not updating the same commit and could result in opening multiple commits on Gerrit."
 
       - name: Clean up resources and close the PR
         run: |
