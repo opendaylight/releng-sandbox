@@ -78,7 +78,7 @@ jobs:
         run: |
           set -x
           cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
-          git --no-pager log --graph --all --decorate --pretty=oneline -n10
+          git --no-pager log --graph --all --decorate --pretty=oneline -n5
 
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@d4fffb50872869abe2d9a9098a6d9c5aa7d16be4 # v2.7.0
@@ -163,6 +163,7 @@ jobs:
           # Apply the patch on the HEAD
           # git am --show-current-patch=diff "$GITHUB_WORKSPACE/${{ env.PR_NUMBER }}.patch"
 
+          git --no-pager log --graph --all --decorate --pretty=oneline -n "${{ env.PR_COMMITS }}"
           git --no-pager log -n2 -p
           git --no-pager diff
           git status
@@ -170,10 +171,10 @@ jobs:
           # Create a Change-id from all the PR
 
           # Capture the last commit HEAD
-          git rev-parse HEAD > last-head-commit-id.txt
+          # git rev-parse HEAD > last-head-commit-id.txt
 
           # Capture and check for signed-of-by and Change-Id
-          git reset --soft "HEAD~${{ env.PR_COMMITS }}"
+          git reset --soft "${{ github.sha }}"
 
           # Check if change-id is present in pull request and process this conditionally
           git log --format=%B --reverse HEAD..HEAD@{1} | grep -E "^(Change-Id)" > Change-ID.txt || true
@@ -262,6 +263,18 @@ jobs:
               repo: context.repo.repo,
               body: "PR-${{ env.PR_NUMBER }} pushed Gerrit for review ${{ env.GERRIT_CHANGE_REQUEST_URL }}!"
             })
+
+      # - name: PR Comment
+      #   uses: actions/github-script@v2
+      #   with:
+      #     github-token: ${{secrets.GITHUB_TOKEN}}
+      #     script: |
+      #       github.issues.createComment({
+      #         issue_number: ${{ github.event.number }},
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         body: ':warning: Have you followed the [contributions guidance](<url_to_contribution_guidance>)? Content PRs should generally be made against the the [source repo](https://github.com/<owner>/<repo>).'
+      #       })
 
       - name: Clean up resources and close the PR
         run: |
