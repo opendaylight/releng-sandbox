@@ -70,7 +70,7 @@ jobs:
         with:
           ssh-user: ${{ vars.GERRIT_SSH_USER_G2G }}
           path: "${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
-          ref: ${{ github.event.pull_request.head.sha }}
+          # ref: ${{ github.event.pull_request.head.sha }}
           # repository: "${{ github.repository }}"
 
       - name: Print last X commits in the git log
@@ -163,13 +163,10 @@ jobs:
           # Apply the patch on the HEAD
           # git am --show-current-patch=diff "$GITHUB_WORKSPACE/${{ env.PR_NUMBER }}.patch"
 
-          git --no-pager log --graph --all --decorate --pretty=oneline -n "${{ env.PR_COMMITS }}"
-          git --no-pager log -n2 -p
-          git --no-pager diff
+          git --no-pager log --graph --all --decorate --pretty=oneline -n"${{ env.PR_COMMITS }}"
           git status
 
           # Create a Change-id from all the PR
-
           # Capture the last commit HEAD
           # git rev-parse HEAD > last-head-commit-id.txt
 
