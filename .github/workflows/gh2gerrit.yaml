@@ -232,7 +232,7 @@ jobs:
           reviewers_email=${REVIEWERS_EMAIL:-"${{ vars.GERRIT_SSH_USER_G2G}}@${{ vars.GERRIT_SERVER}}"}
 
           echo "git review .... inprogress"
-          git review -n --yes -t "GH-PR-${{ env.PR_NUMBER }}" --reviewers "$reviewers_email"
+          git review --yes -t "GH-PR-${{ env.PR_NUMBER }}" --reviewers "$reviewers_email"
 
           # retrive change-id from the submitted PR
           gerrit_change_id=$(git show HEAD --format=%B -s | grep Change-Id: | cut -d " " -f2;)
