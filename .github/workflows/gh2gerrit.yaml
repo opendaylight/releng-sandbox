@@ -50,30 +50,30 @@ jobs:
           git review --version
           jq --version
 
-      - name: Read .gitreview and populate information
-        shell: bash
-        run: |
-          set -x
-
-          cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
-          project_repo_gerrit_git=$(grep -E "project" .gitreview | cut -d "=" -f2)
-          # # change any '-' to '/' and remove owner name
-          project_repo_gerrit="${project_repo_gerrit_git//.*}"
-          project_repo_github="${project_repo_gerrit////-}"
-
-          echo "PROJECT_REPO_GERRIT=${project_repo_gerrit}" >> "$GITHUB_ENV"
-          echo "PROJECT_REPO_GITHUB=${project_repo_github}" >> "$GITHUB_ENV"
-
-      # - name: Set env with Gerrit Github repo format
+      # - name: Read .gitreview and populate information
       #   shell: bash
       #   run: |
       #     set -x
-      #     project_repo_github="${{ github.repository }}"
-      #     # change any '-' to '/' and remove owner name
-      #     project_repo_github="${project_repo_github#*/}"
-      #     project_repo_gerrit="${project_repo_github//-//}"
+      #
+      #     cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
+      #     project_repo_gerrit_git=$(grep -E "project" .gitreview | cut -d "=" -f2)
+      #     # # change any '-' to '/' and remove owner name
+      #     project_repo_gerrit="${project_repo_gerrit_git//.*}"
+      #     project_repo_github="${project_repo_gerrit////-}"
+      #
       #     echo "PROJECT_REPO_GERRIT=${project_repo_gerrit}" >> "$GITHUB_ENV"
       #     echo "PROJECT_REPO_GITHUB=${project_repo_github}" >> "$GITHUB_ENV"
+
+      - name: Set env with Gerrit Github repo format
+        shell: bash
+        run: |
+          set -x
+          project_repo_github="${{ github.repository }}"
+          # change any '-' to '/' and remove owner name
+          project_repo_github="${project_repo_github#*/}"
+          project_repo_gerrit="${project_repo_github//-//}"
+          echo "PROJECT_REPO_GERRIT=${project_repo_gerrit}" >> "$GITHUB_ENV"
+          echo "PROJECT_REPO_GITHUB=${project_repo_github}" >> "$GITHUB_ENV"
 
       - name: Set env GITHUB branch in env
         shell: bash
