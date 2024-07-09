@@ -74,11 +74,12 @@ jobs:
           # ref: ${{ github.event.pull_request.head.sha }}
           # repository: "${{ github.repository }}"
       - run: |
+          cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
           for commit in $(git rev-list ${{ github.base_ref }}..${{ github.head_ref }}); do
-              # git checkout $commit
-              echo "run test"
+              git checkout $commit
+              echo "commit-id: $commit"
           done
-          git --no-pager log --graph --all --decorate --pretty=oneline -n5
+          git --no-pager log --graph --all --decorate --pretty=oneline -n3
 
       - name: Print last X commits in the git log
         if: env.ACT == 'true'
