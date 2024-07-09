@@ -36,7 +36,7 @@ jobs:
         run: ${{ steps.get_actionlint.outputs.executable }} -color
         shell: bash
 
-  gh2gerrit-push:
+  github2gerrit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-python@v5
@@ -50,18 +50,28 @@ jobs:
           git review --version
           jq --version
 
-      - name: Set env with Gerrit Github repo format
-        # if: ${{ github.repository != '' && contains(//) }}
+      - name: Read .gitreview and populate information
         shell: bash
         run: |
           set -x
-          project_repo_github="${{ github.repository }}"
-          # change any '-' to '/' and remove owner name
-          project_repo_github="${project_repo_github#*/}"
-          project_repo_gerrit="${project_repo_github//-//}"
+          project_repo_gerrit_git=$(grep -E "project" .gitreview | cut -d "=" -f2)
+          # # change any '-' to '/' and remove owner name
+          project_repo_gerrit="${project_repo_gerrit_git//.*}"
+          project_repo_github="${project_repo_gerrit////-}"
+
           echo "PROJECT_REPO_GERRIT=${project_repo_gerrit}" >> "$GITHUB_ENV"
           echo "PROJECT_REPO_GITHUB=${project_repo_github}" >> "$GITHUB_ENV"
-          # TODO: Read repo info from .gitreview file
+
+      # - name: Set env with Gerrit Github repo format
+      #   shell: bash
+      #   run: |
+      #     set -x
+      #     project_repo_github="${{ github.repository }}"
+      #     # change any '-' to '/' and remove owner name
+      #     project_repo_github="${project_repo_github#*/}"
+      #     project_repo_gerrit="${project_repo_github//-//}"
+      #     echo "PROJECT_REPO_GERRIT=${project_repo_gerrit}" >> "$GITHUB_ENV"
+      #     echo "PROJECT_REPO_GITHUB=${project_repo_github}" >> "$GITHUB_ENV"
 
       - name: Set env GITHUB branch in env
         shell: bash
@@ -279,16 +289,22 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `:info: The pull-request PR-${{ env.PR_NUMBER }} is submitted to Gerrit
-                    [${{ env.ORGANIZATION }}](https://${{ vars.GERRIT_SERVER }})!
+              body: `:info:
 
-                    To follow up on the change visit: [${{ env.GERRIT_CHANGE_REQUEST_NUMBER }}](${{ env.GERRIT_CHANGE_REQUEST_URL }})
+                The pull-request PR-${{ env.PR_NUMBER }} is submitted to Gerrit
+                [${{ env.ORGANIZATION }}](https://${{ vars.GERRIT_SERVER }})!
 
-                    NOTE: The pull-request PR-${{ env.PR_NUMBER }} will be closed, re-opening the pull-request will
-                    not updating the same commit and could result in opening multiple commits on Gerrit.`
+                To follow up on the change visit: [${{ env.GERRIT_CHANGE_REQUEST_NUMBER }}](${{ env.GERRIT_CHANGE_REQUEST_URL }})
+
+                NOTE: The pull-request PR-${{ env.PR_NUMBER }} will be closed,
+                re-opening the pull-request will not update the same commit
+                and may result in duplicate changes on Gerrit.`
+
+      - name: Close pull-request
+        run: gh pr close --comment "Auto-closing pull request" --delete-branch "${{ env.PR_NUMBER }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Clean up resources and close the PR
         run: |
           echo "closing the up PR"
-      # - uses: actions/stale@v9
-      #   with:
