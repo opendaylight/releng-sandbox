@@ -71,7 +71,7 @@ jobs:
           ssh-user: ${{ vars.GERRIT_SSH_USER_G2G }}
           path: "${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
           fetch-depth: 0
-          # ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           # repository: "${{ github.repository }}"
       - run: |
           cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
