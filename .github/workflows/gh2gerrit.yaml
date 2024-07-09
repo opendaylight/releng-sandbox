@@ -11,8 +11,7 @@ on:
 
 # Permission added at job level or workflow level
 # required to for updating comments on the PR
-permissions:
-  contents: write
+permissions: write-all
 
 concurrency:
   group: ${{ github.run_id }}
