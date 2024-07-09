@@ -179,23 +179,23 @@ jobs:
           # git rev-parse HEAD > last-head-commit-id.txt
 
           # process the commit range
-          for commit in $(git rev-list ${{ github.base_ref }}..${{ github.head_ref }}); do
-              # git checkout $commit
-              echo "commits in range: $commit"
-          done
+          # for commit in $(git rev-list ${{ github.base_ref }}..${{ github.head_ref }}); do
+          #     # git checkout $commit
+          #     echo "commits in range: $commit"
+          # done
 
-          git log --format=%B --reverse ${{ github.base_ref }}..${{ github.head_ref }} | grep -E "^(Change-Id)" > change-ID.txt || true
-          git log --format=%B --reverse ${{ github.base_ref }}..${{ github.head_ref }} | grep -E "^(Signed-off-by)" > signed-off-by.txt || true
-          git log --format=%B --reverse ${{ github.base_ref }}..${{ github.head_ref }} | grep -Ev "^(Signed-off-by|Change-Id)" > commit-msg.txt
-          git reset --hard "${{ github.base_ref }}"
+          # git log --format=%B --reverse ${{ github.base_ref }}..${{ github.head_ref }} | grep -E "^(Change-Id)" > change-ID.txt || true
+          # git log --format=%B --reverse ${{ github.base_ref }}..${{ github.head_ref }} | grep -E "^(Signed-off-by)" > signed-off-by.txt || true
+          # git log --format=%B --reverse ${{ github.base_ref }}..${{ github.head_ref }} | grep -Ev "^(Signed-off-by|Change-Id)" > commit-msg.txt
+          # git reset --hard "${{ github.base_ref }}"
 
           # Capture and check for signed-of-by and Change-Id
-          # git reset --soft "${{ github.sha }}"
+          git reset --soft "${{ github.sha }}"
 
           # Check if change-id is present in pull request and process this conditionally
-          # git log --format=%B --reverse HEAD..HEAD@{1} | grep -E "^(Change-Id)" > change-ID.txt || true
-          # git log --format=%B --reverse HEAD..HEAD@{1} | grep -E "^(Signed-off-by)" > signed-off-by.txt || true
-          # git log --format=%B --reverse HEAD..HEAD@{1} | grep -Ev "^(Signed-off-by|Change-Id)" > commit-msg.txt
+          git log --format=%B --reverse HEAD..HEAD@{1} | grep -E "^(Change-Id)" > change-ID.txt || true
+          git log --format=%B --reverse HEAD..HEAD@{1} | grep -E "^(Signed-off-by)" > signed-off-by.txt || true
+          git log --format=%B --reverse HEAD..HEAD@{1} | grep -Ev "^(Signed-off-by|Change-Id)" > commit-msg.txt
 
           if [[ -f commit-msg.txt ]]; then
             cat commit-msg.txt
