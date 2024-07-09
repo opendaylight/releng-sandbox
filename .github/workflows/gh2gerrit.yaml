@@ -287,15 +287,15 @@ jobs:
           retries: 3
           retry-exempt-status-codes: 400,401
           script: |
-            const output = `The pull-request PR-${{ env.PR_NUMBER }} is submitted to Gerrit [${{ env.ORGANIZATION }}](https://${{ vars.GERRIT_SERVER }})! \n
-              To follow up on the change visit: [${{ env.GERRIT_CHANGE_REQUEST_NUMBER }}](${{ env.GERRIT_CHANGE_REQUEST_URL }}) \n \n
-              NOTE: The pull-request PR-${{ env.PR_NUMBER }} will be closed, re-opening the pull-request will not update the same commit and may result in duplicate changes on Gerrit.`
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: output
-            })
+              body: `The pull-request PR-${{ env.PR_NUMBER }} is submitted to Gerrit [${{ env.ORGANIZATION }}](https://${{ vars.GERRIT_SERVER }})!
+
+To follow up on the change visit: [${{ env.GERRIT_CHANGE_REQUEST_NUMBER }}](${{ env.GERRIT_CHANGE_REQUEST_URL }})
+
+NOTE: The pull-request PR-${{ env.PR_NUMBER }} will be closed, re-opening the pull-request will not update the same commit and may result in duplicate changes on Gerrit.`
 
       - name: Close pull-request
         run: gh pr close --comment "Auto-closing pull request" --delete-branch "${{ env.PR_NUMBER }}"
