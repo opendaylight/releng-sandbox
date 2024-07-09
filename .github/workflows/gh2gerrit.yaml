@@ -261,8 +261,8 @@ jobs:
           ssh -v -p 29418 "${{ vars.GERRIT_SSH_USER_G2G }}@${{ vars.GERRIT_SERVER }}" \
                   gerrit query limit:1 owner:self is:open project:"${{ env.PROJECT_REPO_GITHUB }}" \
                   --current-patch-set --format=JSON "${{ env.GERRIT_CHANGE_ID }}" > query_result.txt
-          query_result_url=$(jq -r '.url | select( . != null )')
-          query_result_number=$(jq -r '.number | select( . != null )')
+          query_result_url=$(jq -r '.url | select( . != null )' query_result.txt)
+          query_result_number=$(jq -r '.number | select( . != null )' query_result.txt)
 
           echo "GERRIT_CHANGE_REQUEST_URL=${query_result_url}" >> "$GITHUB_ENV"
           echo "GERRIT_CHANGE_REQUEST_NUMBER=${query_result_number}" >> "$GITHUB_ENV"
