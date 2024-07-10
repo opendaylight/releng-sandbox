@@ -165,22 +165,21 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - name: Print diff sha and refs
-        shell: bash
-        run: |
-          set -x
-          echo "github.sha: ${{ github.sha }}"
-          echo "github.ref: ${{ github.ref }}"
-          echo "github.ref_name: ${{ github.ref_name }}"
-          echo "github.event.pull_request.base.ref: ${{ github.event.pull_request.base.ref }}"
-          echo "github.event.pull_request.base.sha: ${{ github.event.pull_request.base.sha }}"
-          echo "github.event.pull_request.head.ref: ${{ github.event.pull_request.head.ref }}"
-          echo "github.event.pull_request.head.sha: ${{ github.event.pull_request.head.sha }}"
-          echo "github.merge_commit_sha: ${{ github.sha }}"
-          echo "github.merge_commit_sha: ${{ github.merge_commit_sha }}"
+      # - name: Print diff sha and refs
+      #   shell: bash
+      #   run: |
+      #     set -x
+      #     echo "github.sha: ${{ github.sha }}"
+      #     echo "github.ref: ${{ github.ref }}"
+      #     echo "github.ref_name: ${{ github.ref_name }}"
+      #     echo "github.event.pull_request.base.ref: ${{ github.event.pull_request.base.ref }}"
+      #     echo "github.event.pull_request.base.sha: ${{ github.event.pull_request.base.sha }}"
+      #     echo "github.event.pull_request.head.ref: ${{ github.event.pull_request.head.ref }}"
+      #     echo "github.event.pull_request.head.sha: ${{ github.event.pull_request.head.sha }}"
+      #     echo "github.merge_commit_sha: ${{ github.sha }}"
+      #     echo "github.merge_commit_sha: ${{ github.merge_commit_sha }}"
 
       - name: Apply patch on local repo
-        if: hashFiles('${{ env.PR_NUMBER }}.patch') != ''
         shell: bash
         run: |
           set -x
@@ -191,12 +190,8 @@ jobs:
           # git am --show-current-patch=diff "$GITHUB_WORKSPACE/${{ env.PR_NUMBER }}.patch"
 
           git --no-pager log --graph --all --decorate --pretty=oneline -n"${{ env.PR_COMMITS }}"
-          git status
 
           # Create a Change-id from all the PR
-          # Capture the last commit HEAD
-          # git rev-parse HEAD > last-head-commit-id.txt
-
           # Squash all commits in pull-request into a single commit
           git reset --soft "${{ github.sha }}"
 
