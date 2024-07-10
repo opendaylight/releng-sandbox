@@ -1,0 +1,36 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2024 The Linux Foundation <abelur@linux.com>
+
+name: "Call Github2Gerrit reusable workflow"
+
+# yamllint disable-line rule:truthy
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, reopened, edited, synchronize]
+    branches:
+      - master
+      - main
+
+jobs:
+  call-in-g2g-workflow:
+    permissions:
+      contents: read
+      pull-requests: write
+    secrets: inherit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Call the Github2Gerrit workflow"
+        id: gerrit-upload
+        # uses: askb/Github2Gerrit@main
+        uses: ./
+        with:
+          gerrit_knwown_hosts: ${{ vars.GERRIT_KNOWN_HOSTS }}
+          gerrit_ssh_user_g2g: ${{ vars.GERRIT_SSH_USER_G2G }}
+          source_repo: ${{ github.repository }}
+        secrets:
+          gerrit_ssh_privkey_g2g: ${{ secrets.GERRIT_SSH_PRIVKEY_G2G }}
