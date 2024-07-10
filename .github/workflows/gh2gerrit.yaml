@@ -37,6 +37,7 @@ jobs:
         shell: bash
 
   github2gerrit:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-python@v5
@@ -92,6 +93,7 @@ jobs:
 
       - name: Print last X commits in the git log
         if: env.ACT == 'true'
+        # yamllint disable rule:line-length
         run: |
           set -x
           cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
@@ -113,6 +115,7 @@ jobs:
       - name: Setup Gerrit remote
         if: env.PROJECT_REPO_GERRIT != ''
         shell: bash
+        # yamllint disable rule:line-length
         run: |
           set -x
 
@@ -134,6 +137,7 @@ jobs:
           git review -s -v
 
       - name: Print the pull-request
+        # yamllint disable rule:line-length
         run: |
           set -x
           export PR_NUMBER="${{ github.event.pull_request.number || github.event.issue.number }}"
@@ -145,6 +149,7 @@ jobs:
 
       - name: Download the PR .patch and .diff locally
         if: env.PR_NUMBER != ''
+        # yamllint disable rule:line-length
         run: |
           set -x
 
@@ -157,6 +162,7 @@ jobs:
 
       - name: Get the number of commits in the pull-request
         if: ${{ github.event_name == 'pull_request_target' }}
+        # yamllint disable rule:line-length
         run: |
           set -x
           cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
@@ -181,6 +187,7 @@ jobs:
 
       - name: Apply patch on local repo
         shell: bash
+        # yamllint disable rule:line-length
         run: |
           set -x
 
@@ -228,6 +235,7 @@ jobs:
       - name: Submit the change to Gerrit repository
         id: submit
         if: env.PR_NUMBER != ''
+        # yamllint disable rule:line-length
         run: |
           set -x
           cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
@@ -259,13 +267,17 @@ jobs:
         if: env.GERRIT_CHANGE_ID != ''
         id: change_num
         shell: bash
+        # yamllint disable rule:line-length
         run: |
           set -x
 
           # Query for a pre-existing gerrit review to retrive Change-Id
           ssh -v -p 29418 "${{ vars.GERRIT_SSH_USER_G2G }}@${{ vars.GERRIT_SERVER }}" \
-                  gerrit query limit:1 owner:self is:open project:"${{ env.PROJECT_REPO_GERRIT }}" \
-                  --current-patch-set --format=JSON "${{ env.GERRIT_CHANGE_ID }}" > query_result.txt
+                  gerrit query limit:1 owner:self is:open \
+                  project:"${{ env.PROJECT_REPO_GERRIT }}" \
+                  --current-patch-set --format=JSON \
+                  "${{ env.GERRIT_CHANGE_ID }}" > query_result.txt
+
           query_result_url=$(jq -r '.url | select( . != null )' query_result.txt)
           query_result_number=$(jq -r '.number | select( . != null )' query_result.txt)
 
@@ -292,6 +304,7 @@ jobs:
 
       - name: Close pull-request
         if: ${{ github.event_name == 'pull_request_target' }}
+        # yamllint disable rule:line-length
         run: |
           set -x
           cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
