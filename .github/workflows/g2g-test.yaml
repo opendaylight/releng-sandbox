@@ -18,7 +18,6 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    secrets: inherit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,11 +25,10 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: "Call the Github2Gerrit workflow"
         id: gerrit-upload
-        # uses: askb/Github2Gerrit@main
-        uses: ./
+        # uses: ./
+        uses: askb/Github2Gerrit@main
+        secrets: inherit
         with:
           gerrit_knwown_hosts: ${{ vars.GERRIT_KNOWN_HOSTS }}
           gerrit_ssh_user_g2g: ${{ vars.GERRIT_SSH_USER_G2G }}
           source_repo: ${{ github.repository }}
-        secrets:
-          gerrit_ssh_privkey_g2g: ${{ secrets.GERRIT_SSH_PRIVKEY_G2G }}
