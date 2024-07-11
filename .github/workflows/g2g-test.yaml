@@ -26,7 +26,7 @@ jobs:
         id: gerrit-upload
         uses: askb/github2gerrit@main
         with:
-          GERRIT_SERVER: ${{ vars.GERRIT_KNOWN_HOSTS }}
+          GERRIT_SERVER: ${{ vars.GERRIT_SERVER }}
           GERRIT_KNOWN_HOSTS: ${{ vars.GERRIT_KNOWN_HOSTS }}
           GERRIT_SSH_USER_G2G: ${{ vars.GERRIT_SSH_USER_G2G }}
           GERRIT_SSH_USER_G2G_EMAIL: ${{ vars.GERRIT_SSH_USER_G2G_EMAIL }}
