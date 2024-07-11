@@ -7,6 +7,7 @@ description: "Call askb/github2gerrit reusable workflow"
 
 # yamllint disable-line rule:truthy
 on:
+  workflow_call:
   pull_request_target:
     types: [opened, reopened, edited, synchronize]
     branches:
