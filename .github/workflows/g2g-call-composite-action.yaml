@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2024 The Linux Foundation <abelur@linux.com>
 
-name: "Call Github2Gerrit reusable workflow"
+name: "Call askb/github2gerrit composite action"
 
 # yamllint disable-line rule:truthy
 on:
@@ -22,15 +22,20 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: "Call the Github2Gerrit workflow"
+      - name: "Call the askb/github2gerrit composite action"
         id: gerrit-upload
         uses: askb/github2gerrit@main
         with:
-          GERRIT_SERVER: ${{ vars.GERRIT_SERVER }}
           GERRIT_KNOWN_HOSTS: ${{ vars.GERRIT_KNOWN_HOSTS }}
+          GERRIT_PROJECT: ${{ vars.GERRIT_PROJECT }}
+          GERRIT_SERVER: ${{ vars.GERRIT_SERVER }}
+          GERRIT_SSH_PRIVKEY_G2G: ${{ secrets.GERRIT_SSH_PRIVKEY_G2G }}
           GERRIT_SSH_USER_G2G: ${{ vars.GERRIT_SSH_USER_G2G }}
           GERRIT_SSH_USER_G2G_EMAIL: ${{ vars.GERRIT_SSH_USER_G2G_EMAIL }}
-          GERRIT_SSH_PRIVKEY_G2G: ${{ secrets.GERRIT_SSH_PRIVKEY_G2G }}
-          SOURCE_REPO: ${{ github.repository }}
           ORGANIZATION: ${{ vars.ORGANIZATION }}
-          GERRIT_PROJECT: ${{ vars.GERRIT_PROJECT }}
+
+      - name: "Output change-number and change URL"
+        shell: bash
+        run: |
+          echo "Change URL: ${{ steps.change_num.outputs.GERRIT_CHANGE_REQUEST_URL }}"
+          echo "Change number: ${{ steps.change_num.outputs.GERRIT_CHANGE_REQUEST_NUMBER }}"
