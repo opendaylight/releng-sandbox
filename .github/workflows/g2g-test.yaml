@@ -18,7 +18,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: askb/Github2Gerrit/.github/workflows/github2gerrit.yaml@main
+    uses: askb/github2gerrit@main
     secrets: inherit
     with:
       gerrit_knwown_hosts: ${{ vars.GERRIT_KNOWN_HOSTS }}
