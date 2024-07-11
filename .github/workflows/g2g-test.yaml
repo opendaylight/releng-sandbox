@@ -29,6 +29,8 @@ jobs:
           GERRIT_SERVER: ${{ vars.GERRIT_KNOWN_HOSTS }}
           GERRIT_KNOWN_HOSTS: ${{ vars.GERRIT_KNOWN_HOSTS }}
           GERRIT_SSH_USER_G2G: ${{ vars.GERRIT_SSH_USER_G2G }}
-          SOURCE_REPO: ${{ github.repository }}
           GERRIT_SSH_USER_G2G_EMAIL: ${{ vars.GERRIT_SSH_USER_G2G_EMAIL }}
-          GERRIT_SSH_USER_G2G: ${{ secrets.GERRIT_SSH_PRIVKEY_G2G }}
+          GERRIT_SSH_PRIVKEY_G2G: ${{ secrets.GERRIT_SSH_PRIVKEY_G2G }}
+          SOURCE_REPO: ${{ github.repository }}
+          ORGANIZATION: ${{ vars.ORGANIZATION }}
+          GERRIT_PROJECT: ${{ vars.GERRIT_PROJECT }}
