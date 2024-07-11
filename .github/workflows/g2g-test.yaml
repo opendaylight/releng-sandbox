@@ -6,7 +6,7 @@ name: "Call Github2Gerrit reusable workflow"
 
 # yamllint disable-line rule:truthy
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, reopened, edited, synchronize]
     branches:
       - master
@@ -31,5 +31,4 @@ jobs:
           GERRIT_SSH_USER_G2G: ${{ vars.GERRIT_SSH_USER_G2G }}
           SOURCE_REPO: ${{ github.repository }}
           GERRIT_SSH_USER_G2G_EMAIL: ${{ vars.GERRIT_SSH_USER_G2G_EMAIL }}
-        secrets:
           GERRIT_SSH_USER_G2G: ${{ secrets.GERRIT_SSH_PRIVKEY_G2G }}
