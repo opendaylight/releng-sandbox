@@ -27,10 +27,13 @@ jobs:
         id: gerrit-upload
         uses: askb/github2gerrit@main
         with:
-          gerrit_knwown_hosts: ${{ vars.GERRIT_KNOWN_HOSTS }}
-          gerrit_ssh_user_g2g: ${{ vars.GERRIT_SSH_USER_G2G }}
-          source_repo: ${{ github.repository }}
-        secrets: inherit
+          GERRIT_SERVER: ${{ vars.GERRIT_KNOWN_HOSTS }}
+          GERRIT_KNOWN_HOSTS: ${{ vars.GERRIT_KNOWN_HOSTS }}
+          GERRIT_SSH_USER_G2G: ${{ vars.GERRIT_SSH_USER_G2G }}
+          SOURCE_REPO: ${{ github.repository }}
+          GERRIT_SSH_USER_G2G_EMAIL: ${{ vars.GERRIT_SSH_USER_G2G_EMAIL }}
+        secrets:
+          GERRIT_SSH_USER_G2G: ${{ secrets.GERRIT_SSH_PRIVKEY_G2G }}
 
 # jobs:
 #   call-in-g2g-workflow:
