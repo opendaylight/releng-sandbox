@@ -23,7 +23,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: askb/github2gerrit/.github/workflows/githut2gerrit.yaml@main
+    uses: askb/github2gerrit/.github/workflows/github2gerrit.yaml@main
     with:
       GERRIT_KNOWN_HOSTS: ${{ vars.GERRIT_KNOWN_HOSTS }}
       GERRIT_PROJECT: ${{ vars.GERRIT_PROJECT }}
