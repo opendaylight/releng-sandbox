@@ -18,9 +18,28 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: askb/github2gerrit@main
-    secrets: inherit
-    with:
-      gerrit_knwown_hosts: ${{ vars.GERRIT_KNOWN_HOSTS }}
-      gerrit_ssh_user_g2g: ${{ vars.GERRIT_SSH_USER_G2G }}
-      source_repo: ${{ github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Call the Github2Gerrit workflow"
+        id: gerrit-upload
+        uses: askb/github2gerrit@main
+        with:
+          gerrit_knwown_hosts: ${{ vars.GERRIT_KNOWN_HOSTS }}
+          gerrit_ssh_user_g2g: ${{ vars.GERRIT_SSH_USER_G2G }}
+          source_repo: ${{ github.repository }}
+        secrets: inherit
+
+# jobs:
+#   call-in-g2g-workflow:
+#     permissions:
+#       contents: read
+#       pull-requests: write
+#     uses: askb/github2gerrit@main
+#     secrets: inherit
+#     with:
+#       gerrit_knwown_hosts: ${{ vars.GERRIT_KNOWN_HOSTS }}
+#       gerrit_ssh_user_g2g: ${{ vars.GERRIT_SSH_USER_G2G }}
+#       source_repo: ${{ github.repository }}
