@@ -93,10 +93,10 @@ jobs:
           path: "${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
+          # repository: "${{ github.repository }}"
 
       - name: Print last X commits in the git log
         if: env.ACT == 'true'
-        shell: bash
         # yamllint disable rule:line-length
         run: |
           set -x
@@ -140,34 +140,32 @@ jobs:
           # Init gerrit repo
           git review -s -v
 
-      - name: Get the number of commits in the pull-request
-        if: ${{ github.event_name == 'pull_request_target' }}
-        shell: bash
+      - name: Print the pull-request
         # yamllint disable rule:line-length
         run: |
           set -x
-          cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
-          num_commits="$(gh pr view ${{ env.PR_NUMBER }} --json commits | jq '.[] | length')"
-          echo "PR_COMMITS=$num_commits" >> "$GITHUB_ENV"
-        env:
-          GH_TOKEN: ${{ github.token }}
+          export PR_NUMBER="${{ github.event.pull_request.number || github.event.issue.number }}"
+          echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_ENV"
+          # Set a temp PR to test with ACT
+          if [[ $PR_NUMBER == '' ]]; then
+              echo "PR_NUMBER=${{ vars.PR_NUM }}" >> "$GITHUB_ENV"
+          fi
 
-      # - name: Download the PR .patch and .diff locally
-      #   if: env.PR_NUMBER != ''
-      #   # yamllint disable rule:line-length
-      #   run: |
-      #     set -x
-      #
-      #     patch_path="${{ vars.ORGANIZATION }}/${{ env.PROJECT_REPO_GITHUB }}/pull/${{ env.PR_NUMBER }}.patch"
-      #     wget -q "https://github.com/${patch_path}"
-      #
-      #     if [[ -f "${{ env.PR_NUMBER }}.patch" ]]; then
-      #         echo "PR-${{ env.PR_NUMBER }} download successfully"
-      #     fi
+      - name: Download the PR .patch and .diff locally
+        if: env.PR_NUMBER != ''
+        # yamllint disable rule:line-length
+        run: |
+          set -x
+
+          patch_path="${{ vars.ORGANIZATION }}/${{ env.PROJECT_REPO_GITHUB }}/pull/${{ env.PR_NUMBER }}.patch"
+          wget -q "https://github.com/${patch_path}"
+
+          if [[ -f "${{ env.PR_NUMBER }}.patch" ]]; then
+              echo "PR-${{ env.PR_NUMBER }} download successfully"
+          fi
 
       - name: Get the number of commits in the pull-request
         if: ${{ github.event_name == 'pull_request_target' }}
-        shell: bash
         # yamllint disable rule:line-length
         run: |
           set -x
@@ -210,27 +208,29 @@ jobs:
 
           # Check if change-id is present in each commit and use the first one
           # Capture and check for signed-of-by and Change-Id
-          git log -v --format=%B --reverse "HEAD..HEAD@{1}" | grep -E "^(Change-Id)" > change-ID.txt || true
-          git log -v --format=%B --reverse "HEAD..HEAD@{1}" | grep -E "^(Signed-off-by)" > signed-off-by.txt || true
-          git log -v --format=%B --reverse "HEAD..HEAD@{1}" | grep -Ev "^(Signed-off-by|Change-Id)" > commit-msg.txt
+          git log -v --format=%B --reverse HEAD..HEAD@{1} | grep -E "^(Change-Id)" > change-ID.txt || true
+          git log -v --format=%B --reverse HEAD..HEAD@{1} | grep -E "^(Signed-off-by)" > signed-off-by.txt || true
+          git log -v --format=%B --reverse HEAD..HEAD@{1} | grep -Ev "^(Signed-off-by|Change-Id)" > commit-msg.txt
 
           if [[ -f commit-msg.txt ]]; then
+            cat commit-msg.txt
             commit_message="${commit_message:-commit-msg.txt}"
           fi
 
           if [[ -f change-ID.txt ]]; then
+            cat change-ID.txt
             commit_message+=' '
             commit_message+="change-ID.txt"
           fi
 
           if [[ -f signed-off-by.txt ]]; then
-            sort -u signed-off-by.txt -o signed-off-by-final.txt
+            cat signed-off-by.txt | sort | uniq -d > signed-off-by-final.txt
+            cat signed-off-by-final.txt
             commit_message+=' '
             commit_message+="signed-off-by-final.txt"
           fi
 
-          # shellcheck disable=SC2086
-          git commit -s -v --no-edit -m "$(cat $commit_message)"
+          git commit -s -v --amend --no-edit -m "$(cat ${commit_message})"
           git log -n2
 
           # TODO: Get rid of any merge commit in the patch
@@ -239,25 +239,33 @@ jobs:
       - name: Submit the change to Gerrit repository
         id: submit
         if: env.PR_NUMBER != ''
-        shell: bash
         # yamllint disable rule:line-length
         run: |
           set -x
           cd "$GITHUB_WORKSPACE/${{ env.PROJECT_REPO_GITHUB }}-${{ env.GERRIT_BRANCH }}"
 
-          reviewers_emails_list="${{ vars.REVIEWERS_EMAIL }}"
           # If the reviewers email is unset/empty then use a default
-          reviewers=${reviewers_emails_list:-"${{ vars.GERRIT_SSH_USER_G2G_EMAIL }}"}
+          reviewers_email=${REVIEWERS_EMAIL:-"${{ vars.GERRIT_SSH_USER_G2G_EMAIL }}"}
 
           echo "git review .... inprogress"
-          git review --yes -t "GH-PR-${{ env.PR_NUMBER }}" --reviewers "$reviewers"
+          git review --yes -t "GH-PR-${{ env.PR_NUMBER }}" --reviewers "$reviewers_email"
 
           # retrive change-id from the submitted PR
           gerrit_change_id=$(git show HEAD --format=%B -s | grep Change-Id: | cut -d " " -f2;)
 
-          if [[ "$gerrit_change_id" != '' ]]; then
+          # Set a temp PR to test with ACT
+          if [[ "$gerrit_change_id" == '' ]]; then
+              echo "FAIL: Could not find the change-Id"
+          else
               echo "GERRIT_CHANGE_ID=${gerrit_change_id}" >> "$GITHUB_ENV"
           fi
+          # echo "GERRIT_CHANGE_ID=Iafa61d4b861941624c4c44b0fde21f534a7344ad" >> "$GITHUB_ENV"
+
+      - name: Set fake change-Id to with nektos-act
+        if: ( steps.submit.outputs.gerrit_change_id != '' && env.ACT == 'true' )
+        run: |
+          set -x
+          echo "GERRIT_CHANGE_ID=Iafa61d4b861941624c4c44b0fde21f534a7344ad" >> "$GITHUB_ENV"
 
       - name: Retrive the Gerrit change number from Change-ID
         if: env.GERRIT_CHANGE_ID != ''
@@ -300,7 +308,6 @@ jobs:
 
       - name: Close pull-request
         if: ${{ github.event_name == 'pull_request_target' }}
-        shell: bash
         # yamllint disable rule:line-length
         run: |
           set -x
@@ -308,3 +315,7 @@ jobs:
           gh pr close --comment "Auto-closing pull request" --delete-branch "${{ env.PR_NUMBER }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Clean up resources and close the PR
+        run: |
+          echo "closing the up PR"
