@@ -25,6 +25,8 @@ jobs:
       pull-requests: write
     uses: askb/github2gerrit/.github/workflows/github2gerrit.yaml@main
     with:
+      SUBMIT_SINGLE_COMMITS: true
+      USE_PR_AS_COMMIT: false
       GERRIT_KNOWN_HOSTS: ${{ vars.GERRIT_KNOWN_HOSTS }}
       GERRIT_SSH_USER_G2G: ${{ vars.GERRIT_SSH_USER_G2G }}
       GERRIT_SSH_USER_G2G_EMAIL: ${{ vars.GERRIT_SSH_USER_G2G_EMAIL }}
