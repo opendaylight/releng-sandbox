@@ -14,7 +14,6 @@ on:
 
 jobs:
   call-in-g2g-workflow:
-    if: false
     permissions:
       contents: read
       pull-requests: write
@@ -27,6 +26,8 @@ jobs:
         id: gerrit-upload
         uses: askb/github2gerrit@main
         with:
+          SUBMIT_SINGLE_COMMITS: true
+          USE_PR_AS_COMMIT: false
           FETCH_DEPTH: 10
           GERRIT_KNOWN_HOSTS: ${{ vars.GERRIT_KNOWN_HOSTS }}
           GERRIT_SERVER: ${{ vars.GERRIT_SERVER }}
