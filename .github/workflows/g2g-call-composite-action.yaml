@@ -26,8 +26,8 @@ jobs:
         id: gerrit-upload
         uses: askb/github2gerrit@main
         with:
-          SUBMIT_SINGLE_COMMITS: true
-          USE_PR_AS_COMMIT: false
+          SUBMIT_SINGLE_COMMITS: 'true'
+          USE_PR_AS_COMMIT: 'false'
           FETCH_DEPTH: 10
           GERRIT_KNOWN_HOSTS: ${{ vars.GERRIT_KNOWN_HOSTS }}
           GERRIT_SSH_PRIVKEY_G2G: ${{ secrets.GERRIT_SSH_PRIVKEY_G2G }}
