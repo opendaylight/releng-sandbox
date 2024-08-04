@@ -31,13 +31,15 @@ jobs:
           # Secrets are now available as masked environment variable.
           echo $CREDENTIAL1 # or ${{ env.CREDENTIAL1 }}
           echo $CREDENTIAL2 # or ${{ env.CREDENTIAL2 }}
+          echo $CLOUDS_ENV_B64 # or ${{ env.CLOUDS_ENV_B64 }}
+          echo $CLOUD_PASS # or ${{ env.CLOUD_PASS }}
 
       - name: Check credentials escape chars if its the same as set/read on repo
         run: |
           # Secrets are now available as masked environment variable.
-          if ${{ env.CREDENTIAL1 == "^!@#$%^&*pas$word123!^%!#" }}; then
+          if ${{ env.CREDENTIAL1 == '^!@#$%^&*pas$word123!^%!#' }}; then
               echo "CREDENTIAL1 matches value";
           fi
-          if ${{ env.CREDENTIAL2 == "test this secret ^!@#$%^&*pas$word123!^%!#" }}; then
+          if ${{ env.CREDENTIAL2 == 'test this secret ^!@#$%^&*pas$word123!^%!#' }}; then
               echo "CREDENTIAL2 matches value";
           fi

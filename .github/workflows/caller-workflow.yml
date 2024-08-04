@@ -16,20 +16,33 @@ jobs:
     outputs:
       CREDENTIAL1: ${{ steps.credentials.outputs.CREDENTIAL1 }}
       CREDENTIAL2: ${{ steps.credentials.outputs.CREDENTIAL2 }}
+      CLOUD_PASS: ${{ steps.credentials.outputs.CLOUD_PASS }}
+      CLOUDS_ENV_B64: ${{ steps.credentials.outputs.CLOUDS_ENV_B64 }}
+      # CLOUDS_YAML_B64: ${{ steps.credentials.outputs.CLOUDS_YAML_B64 }}
     steps:
       - name: Output encoded credentials
         id: credentials
         env:
           CREDENTIAL1: ${{ secrets.CREDENTIAL1 }}
           CREDENTIAL2: ${{ secrets.CREDENTIAL2 }}
+          CLOUD_PASS: ${{ secrets.CLOUD_PASS }}
+          CLOUDS_ENV_B64: ${{ secrets.CLOUDS_ENV_B64 }}
+          # CLOUDS_YAML_B64: ${{ secrets.CLOUDS_YAML_B64 }}
+
         run: |
           echo "CREDENTIAL1=$(echo $CREDENTIAL1 | base64 -w0 | base64 -w0)" >> $GITHUB_OUTPUT
           echo "CREDENTIAL2=$(echo $CREDENTIAL2 | base64 -w0 | base64 -w0)" >> $GITHUB_OUTPUT
+          echo "CLOUD_PASS=$(echo $CLOUD_PASS | base64 -w0 | base64 -w0)" >> $GITHUB_OUTPUT
+          echo "CLOUDS_ENV_B64=$(echo $CLOUDS_ENV_B64 | base64 -w0 | base64 -w0)" >> $GITHUB_OUTPUT
+        # echo "CLOUDS_YAML_B64=$(echo $CLOUDS_ENV_B64 | base64 -w0 | base64 -w0)" >> $GITHUB_OUTPUT
 
-  reusable-workflow:
+  call-reusable-workflow:
     needs: credentials
     uses: opendaylight/releng-sandbox/.github/workflows/reusable-workflow.yml@master
     secrets:
       env_vars: |
         CREDENTIAL1=${{ needs.credentials.outputs.CREDENTIAL1 }}
         CREDENTIAL2=${{ needs.credentials.outputs.CREDENTIAL2 }}
+        CLOUD_PASS=${{ needs.credentials.outputs.CLOUD_PASS }}
+        CLOUDS_ENV_B64=${{ needs.credentials.outputs.CLOUDS_ENV_B64 }}
+      # CLOUDS_YAML_B64=${{ needs.credentials.outputs.CLOUDS_YAML_B64 }}
