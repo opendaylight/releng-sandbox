@@ -1,3 +1,4 @@
+---
 # reusable-workflow.yml
 
 on:
@@ -5,6 +6,12 @@ on:
     secrets:
       env_vars:
         required: true
+
+concurrency:
+  # yamllint disable-line rule:line-length
+  group: reusable-${{ github.workflow }}-${{ github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   parse-credentials:
     runs-on: ubuntu-latest
