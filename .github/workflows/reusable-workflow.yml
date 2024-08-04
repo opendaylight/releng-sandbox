@@ -18,7 +18,7 @@ jobs:
 
   reusable-workflow:
     needs: credentials
-    uses: reusable-workflow.yml
+    uses: reusable-workflow.yml@main
     secrets:
       env_vars: |
         CREDENTIAL1=${{ needs.credentials.outputs.CREDENTIAL1 }}
