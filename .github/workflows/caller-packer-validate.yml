@@ -11,7 +11,7 @@ on:
       - main
 
 jobs:
-  call-reusable-workflow:
+  call-packer-validate:
     uses: opendaylight/releng-sandbox/.github/workflows/reusable-workflow-packer-validate.yml@master
     secrets:
       ENV_SECRETS: |
