@@ -1,0 +1,45 @@
+---
+# reusable-workflow.yml
+
+on:
+  workflow_call:
+    secrets:
+      env_vars:
+        required: true
+
+concurrency:
+  # yamllint disable-line rule:line-length
+  group: reusable-${{ github.workflow }}-${{ github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  parse-credentials:
+    runs-on: ubuntu-latest
+    env:
+      env_vars: ${{ secrets.env_vars }}
+    steps:
+      - name: Decode credentials as environment variables
+        run: |
+          for i in $env_vars; do
+            i=$(echo $i | sed 's/=.*//g')=$(echo ${i#*=} | base64 -di | base64 -di)
+            echo ::add-mask::${i#*=}
+            printf '%s\n' "$i" >> $GITHUB_ENV
+          done
+
+      - name: Validate credentials
+        run: |
+          # Secrets are now available as masked environment variable.
+          echo $CREDENTIAL1 # or ${{ env.CREDENTIAL1 }}
+          echo $CREDENTIAL2 # or ${{ env.CREDENTIAL2 }}
+        # echo $CLOUDS_ENV_B64 # or ${{ env.CLOUDS_ENV_B64 }}
+        # echo $CLOUD_PASS # or ${{ env.CLOUD_PASS }}
+
+      - name: Check credentials escape chars if its the same as set/read on repo
+        run: |
+          # Secrets are now available as masked environment variable.
+          if ${{ env.CREDENTIAL1 == '^!@#$%^&*pas$word123!^%!#' }}; then
+              echo "CREDENTIAL1 matches value";
+          fi
+          if ${{ env.CREDENTIAL2 == 'test this secret ^!@#$%^&*pas$word123!^%!#' }}; then
+              echo "CREDENTIAL2 matches value";
+          fi
