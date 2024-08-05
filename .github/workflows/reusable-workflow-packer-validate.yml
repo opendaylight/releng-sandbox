@@ -41,11 +41,14 @@ jobs:
         run: |
           set -x
           # Secrets are now available as masked environment variable.
-          if ${{ env.CLOUDS_ENV_2XB64 != '' }}; then
+          if [[ ${CLOUDS_ENV_2XB64} != '' ]]; then
               echo "CLOUDS_ENV_2XB64 matches value";
+              echo "$CLOUDS_ENV_2XB64"
           fi
-          if ${{ env.CLOUDS_YAML_2XB64 != '' }}; then
+
+          if [[ ${CLOUDS_YAML_2XB64} != '' ]]; then
               echo "CLOUDS_YAML_2XB64 matches value";
+              echo "$CLOUDS_YAML_2XB64"
           fi
 
       - name: Create a file and check
@@ -54,15 +57,15 @@ jobs:
           set -x
 
           # Secrets are now available as masked environment variable.
-          if ${{ env.CLOUDS_ENV_2XB64 != '' }}; then
-              clouds_env_b64="${{ env.CLOUDS_ENV_2XB64 }}"
+          if [[ "$CLOUDS_ENV_2XB64" != '' ]]; then
+              clouds_env_b64="$CLOUDS_ENV_2XB64"
               echo "${clouds_env_b64}" | base64 --decode | base64 --decode > "${GITHUB_WORKSPACE}/cloud-env.pkrvars.hcl"
               cat "${GITHUB_WORKSPACE}/cloud-env.pkrvars.hcl" | base64 --decode | base64 --decode | egrep -v '(password|username)'
           fi
 
-          if ${{ env.CLOUDS_YAML_2XB64 != '' }}; then
+          if [[ "$CLOUDS_YAML_2XB64" != '' ]]; then
               mkdir -p "$HOME/.config/openstack"
-              clouds_yaml_b64="${{ env.CLOUDS_YAML_2XB64 }}"
+              clouds_yaml_b64="$CLOUDS_YAML_2XB64"
               echo "${clouds_yaml_b64}" | base64 --decode | base64 --decode > "$HOME/.config/openstack/clouds.yaml"
               cat "$HOME/.config/openstack/clouds.yaml" | base64 --decode | base64 --decode | egrep -v '(cloud_pass|cloud_user)'
           fi
