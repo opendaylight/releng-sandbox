@@ -17,3 +17,4 @@ jobs:
       ENV_SECRETS: |
         CLOUDS_ENV_2XB64=${{ secrets.CLOUDS_ENV_2XB64 }}
         CLOUDS_YAML_2XB64=${{ secrets.CLOUDS_YAML_2XB64 }}
+      JSON_SECRETS: ${{ toJSON(secrets) }}

@@ -6,6 +6,10 @@ on:
     secrets:
       ENV_SECRETS:
         # yamllint disable-line rule:line-length
+        description: "Pass GitHub secrets to be exported as env vars"
+        required: true
+      JSON_SECRETS:
+        # yamllint disable-line rule:line-length
         description: "Pass GitHub secrets to be exported as env vars via `toJSON(secrets)` or specific secrets encoded in JSON format"
         required: true
 
@@ -19,7 +23,13 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ENV_SECRETS: ${{ secrets.ENV_SECRETS }}
+      JSON_SECRETS: ${{ secrets.JSON_SECRETS }}
     steps:
+      - name: "Dump tojson secrets"
+        shell: bash
+        run: |
+          echo "$JSON_SECRETS"
+
       - name: Decode credentials as environment variables
         shell: bash
         run: |
@@ -33,19 +43,19 @@ jobs:
 
           for kval in $ENV_SECRETS; do
             # extract the key name
-            key=$(echo "$kval" | sed 's/=.*//g')
+            # key="$(echo "$kval" | sed 's/=.*//g')"
+            key="${kval%%=*}"
             # extract the value in b64 format
             encoded_val="${kval#*=}"
             # decode the value
-            decoded_val="$(echo "$encoded_val" | base64 -di | base64 -di)"
+            # decoded_val="$(echo "$encoded_val" | base64 -di | base64 -di)"
             # construct the entire 'key=value' string
-            decoded_kval="$(echo "$key")=$(echo "$decoded_val")"
+            # decoded_kval="$(echo "$key")=$(echo "$decoded_val")"
             # mask to value
             echo ::add-mask::"$encoded_val"
             # Add to env
             # printf '%s<<EOF\n%s\nEOF\n' "$key" "$decoded_kval" >> $GITHUB_ENV
             printf '%s<<EOF\n%s\nEOF\n' "$key" "$encoded_val" >> $GITHUB_ENV
-
           done
 
       - name: Validate credentials
