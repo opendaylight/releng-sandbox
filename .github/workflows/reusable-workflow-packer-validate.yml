@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ENV_SECRETS: ${{ secrets.ENV_SECRETS }}
-      JSON_SECRETS: ${{ fromJSON(secrets.JSON_SECRETS) }}
+      JSON_SECRETS: ${{ secrets.JSON_SECRETS }}
     steps:
       - name: "Dump tojson secrets"
         shell: bash
