@@ -3,7 +3,7 @@
 
 # yamllint disable-line rule:truthy
 on:
-  workflow_call:
+  workflow_dispatch:
     secrets:
       CLOUDS_ENV_2XB64:
         description: "Packer cloud environment credentials"
@@ -19,6 +19,9 @@ on:
 
 jobs:
   call-reusable-workflow:
+    permissions:
+      contents: read
+      pull-requests: read
     uses: opendaylight/releng-sandbox/.github/workflows/reusable-workflow-packer-validate.yml@master
     secrets:
-      ENV_SECRETS: ${{ secrets }}
+      ENV_SECRETS: ${{ toJSON(secrets) }}
