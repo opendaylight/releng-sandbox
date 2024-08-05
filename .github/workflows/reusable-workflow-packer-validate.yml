@@ -35,11 +35,14 @@ jobs:
         run: |
           echo "$ENV_SECRETS"
 
-      - name: Decode credentials as environment variables as json strings
-        shell: bash
-        run: |
-          # set -x
-
+      # - name: Decode credentials as environment variables as json strings
+      #   shell: bash
+      #   run: |
+      #     # set -x
+      #     readarray -t json_secrets < <(echo "$JSON_SECRETS" | jq -r '.')
+      #     for i in "${json_secrets[@]}"; do
+      #         echo "$i"
+      #     done
 
       - name: Decode credentials as environment variables
         shell: bash
