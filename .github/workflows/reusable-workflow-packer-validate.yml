@@ -23,7 +23,7 @@ jobs:
       - name: Decode credentials as environment variables
         shell: bash
         run: |
-          set -x
+          # set -x
 
           # for i in $ENV_SECRETS; do
           #   i=$(echo "$i" | sed 's/=.*//g')=$(echo ${i#*=} | base64 -di | base64 -di)
@@ -57,7 +57,7 @@ jobs:
 
       - name: Check credentials escape chars if its the same as set/read on repo
         run: |
-          set -x
+          # set -x
           # Secrets are now available as masked environment variable.
           if [[ ${CLOUDS_ENV_2XB64} != '' ]]; then
               echo "CLOUDS_ENV_2XB64 matches value";
@@ -72,7 +72,7 @@ jobs:
       - name: Create a file and check
         shell: bash
         run: |
-          set -x
+          # set -x
 
           # Secrets are now available as masked environment variable.
           if [[ "$CLOUDS_ENV_2XB64" != '' ]]; then
