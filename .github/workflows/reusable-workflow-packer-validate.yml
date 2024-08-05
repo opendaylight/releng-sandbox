@@ -24,10 +24,26 @@ jobs:
         shell: bash
         run: |
           set -x
-          for i in $ENV_SECRETS; do
-            i=$(echo "$i" | sed 's/=.*//g')=$(echo ${i#*=} | base64 -di | base64 -di)
-            echo ::add-mask::${i#*=}
-            printf '%s\n' "$i" >> $GITHUB_ENV
+
+          # for i in $ENV_SECRETS; do
+          #   i=$(echo "$i" | sed 's/=.*//g')=$(echo ${i#*=} | base64 -di | base64 -di)
+          #   echo ::add-mask::${i#*=}
+          #   printf '%s\n' "$i" >> $GITHUB_ENV
+          # done
+
+          for kval in "$ENV_SECRETS"; do
+            # extract the 'key' name
+            key=$(echo "$kval" | sed 's/=.*//g')
+            # extract the 'value' in b64 format
+            2b64val=$(echo ${kval#*=})
+            # decode the 'value'
+            2dval=$(echo "$2b64val" | base64 -di | base64 -di)
+            # construct the entire 'key=value' string
+            decodedkval="$(echo "$key")=$(echo "$2dval")"
+            # mask to value
+            echo ::add-mask::"$2b64val"
+            # Add to env
+            printf '%s<<EOF\n%s\nEOF\n' "$key" "$decodedkval" >> $GITHUB_ENV
           done
 
       - name: Validate credentials
