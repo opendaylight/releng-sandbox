@@ -14,4 +14,6 @@ jobs:
   call-reusable-workflow:
     uses: opendaylight/releng-sandbox/.github/workflows/reusable-workflow-packer-validate.yml@master
     secrets:
-      ENV_SECRETS: ${{ secrets }}
+      ENV_SECRETS: |
+        CLOUDS_ENV_2XB64=${{ secrets.CLOUDS_ENV_2XB64 }}
+        CLOUDS_YAML_2XB64=${{ secrets.CLOUDS_YAML_2XB64 }}
