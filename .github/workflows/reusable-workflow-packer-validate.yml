@@ -31,7 +31,7 @@ jobs:
           #   printf '%s\n' "$i" >> $GITHUB_ENV
           # done
 
-          for kval in "$ENV_SECRETS"; do
+          for kval in $ENV_SECRETS; do
             # extract the 'key' name
             key=$(echo "$kval" | sed 's/=.*//g')
             # extract the 'value' in b64 format
