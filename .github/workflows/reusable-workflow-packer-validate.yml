@@ -8,6 +8,14 @@ on:
         # yamllint disable-line rule:line-length
         description: "Pass GitHub secrets to be exported as env vars"
         required: true
+      CLOUDS_ENV_2XB64:
+        # yamllint disable-line rule:line-length
+        description: "GitHub secrets"
+        required: true
+      CLOUDS_YAML_2XB64:
+        # yamllint disable-line rule:line-length
+        description: "GitHub secrets"
+        required: true
 
 concurrency:
   # yamllint disable-line rule:line-length
