@@ -39,6 +39,7 @@ jobs:
 
       - name: Check credentials escape chars if its the same as set/read on repo
         run: |
+          set -x
           # Secrets are now available as masked environment variable.
           if ${{ env.CLOUDS_ENV_2XB64 != '' }}; then
               echo "CLOUDS_ENV_2XB64 matches value";
@@ -50,6 +51,8 @@ jobs:
       - name: Create a file and check
         shell: bash
         run: |
+          set -x
+
           # Secrets are now available as masked environment variable.
           if ${{ env.CLOUDS_ENV_2XB64 != '' }}; then
               clouds_env_b64="${{ env.CLOUDS_ENV_2XB64 }}"
