@@ -35,9 +35,9 @@ jobs:
             # extract the 'key' name
             key=$(echo "$kval" | sed 's/=.*//g')
             # extract the 'value' in b64 format
-            2b64val=$(echo ${kval#*=})
+            2b64val="$(echo ${kval#*=})"
             # decode the 'value'
-            2dval=$(echo "$2b64val" | base64 -di | base64 -di)
+            2dval="$(echo "$2b64val" | base64 -di | base64 -di)"
             # construct the entire 'key=value' string
             decodedkval="$(echo "$key")=$(echo "$2dval")"
             # mask to value
