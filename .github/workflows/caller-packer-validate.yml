@@ -4,13 +4,6 @@
 # yamllint disable-line rule:truthy
 on:
   workflow_dispatch:
-    secrets:
-      CLOUDS_ENV_2XB64:
-        description: "Packer cloud environment credentials"
-        required: true
-      CLOUDS_YAML_2XB64:
-        description: "Openstack cloud environment credentials"
-        required: true
   pull_request_target:
     types: [opened, reopened, edited, synchronize]
     branches:
