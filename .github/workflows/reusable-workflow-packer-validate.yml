@@ -30,6 +30,17 @@ jobs:
         run: |
           echo "$JSON_SECRETS"
 
+      - name: "Dump secrets"
+        shell: bash
+        run: |
+          echo "$ENV_SECRETS"
+
+      - name: Decode credentials as environment variables as json strings
+        shell: bash
+        run: |
+          # set -x
+
+
       - name: Decode credentials as environment variables
         shell: bash
         run: |
