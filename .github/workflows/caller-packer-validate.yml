@@ -15,8 +15,8 @@ jobs:
     uses: opendaylight/releng-sandbox/.github/workflows/reusable-workflow-packer-validate.yml@master
     secrets:
       env_vars: |
-        CREDENTIAL1=${{ secrets.CREDENTIAL1 }}
-        CREDENTIAL2=${{ secrets.CREDENTIAL2 }}
+        CREDENTIAL3=${{ secrets.CREDENTIAL3 }}
+        CREDENTIAL4=${{ secrets.CREDENTIAL4 }}
       # CLOUD_PASS=${{ needs.credentials.outputs.CLOUD_PASS }}
       # CLOUDS_ENV_B64=${{ needs.credentials.outputs.CLOUDS_ENV_B64 }}
       # CLOUDS_YAML_B64=${{ needs.credentials.outputs.CLOUDS_YAML_B64 }}
