@@ -21,14 +21,17 @@ jobs:
       ENV_SECRETS: ${{ secrets.ENV_SECRETS }}
     steps:
       - name: Decode credentials as environment variables
+        shell: bash
         run: |
+          set -x
           for i in $ENV_SECRETS; do
-            i=$(echo $i | sed 's/=.*//g')=$(echo ${i#*=} | base64 -di | base64 -di)
+            i=$(echo "$i" | sed 's/=.*//g')=$(echo ${i#*=} | base64 -di | base64 -di)
             echo ::add-mask::${i#*=}
             printf '%s\n' "$i" >> $GITHUB_ENV
           done
 
       - name: Validate credentials
+        shell: bash
         run: |
           # Secrets are now available as masked environment variable.
           echo "$CLOUDS_ENV_2XB64"
@@ -45,6 +48,7 @@ jobs:
           fi
 
       - name: Create a file and check
+        shell: bash
         run: |
           # Secrets are now available as masked environment variable.
           if ${{ env.CLOUDS_ENV_2XB64 != '' }}; then
