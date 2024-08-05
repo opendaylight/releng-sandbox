@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ENV_SECRETS: ${{ secrets.ENV_SECRETS }}
-      JSON_SECRETS: ${{ fromJSON(JSON_SECRETS) }}
+      JSON_SECRETS: ${{ fromJSON(secrets.JSON_SECRETS) }}
     steps:
       - name: "Dump tojson secrets"
         shell: bash
@@ -35,25 +35,10 @@ jobs:
         run: |
           echo "$ENV_SECRETS"
 
-      # - name: Decode credentials as environment variables as json strings
-      #   shell: bash
-      #   run: |
-      #     # set -x
-      #     readarray -t json_secrets < <(echo "$JSON_SECRETS" | jq -r '.')
-      #     for i in "${json_secrets[@]}"; do
-      #         echo "$i"
-      #     done
-
       - name: Decode credentials as environment variables
         shell: bash
         run: |
           # set -x
-
-          # for i in $ENV_SECRETS; do
-          #   i=$(echo "$i" | sed 's/=.*//g')=$(echo ${i#*=} | base64 -di | base64 -di)
-          #   echo ::add-mask::${i#*=}
-          #   printf '%s\n' "$i" >> $GITHUB_ENV
-          # done
 
           for kval in $ENV_SECRETS; do
             # extract the key name
@@ -75,14 +60,12 @@ jobs:
       - name: Validate credentials
         shell: bash
         run: |
-          # Secrets are now available as masked environment variable.
           echo "$CLOUDS_ENV_2XB64"
           echo "$CLOUDS_YAML_2XB64"
 
       - name: Check credentials escape chars if its the same as set/read on repo
         run: |
           # set -x
-          # Secrets are now available as masked environment variable.
           if [[ ${CLOUDS_ENV_2XB64} != '' ]]; then
               echo "CLOUDS_ENV_2XB64 matches value";
               echo "$CLOUDS_ENV_2XB64"
