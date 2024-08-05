@@ -4,7 +4,9 @@
 on:
   workflow_call:
     secrets:
-      env_vars:
+      ENV_SECRETS:
+        # yamllint disable-line rule:line-length
+        description: "Pass GitHub secrets to be exported as env vars via `toJSON(secrets)` or specific secrets encoded in JSON format"
         required: true
 
 concurrency:
@@ -16,11 +18,11 @@ jobs:
   parse-credentials:
     runs-on: ubuntu-latest
     env:
-      env_vars: ${{ secrets.env_vars }}
+      ENV_SECRETS: ${{ secrets.ENV_SECRETS }}
     steps:
       - name: Decode credentials as environment variables
         run: |
-          for i in $env_vars; do
+          for i in $ENV_SECRETS; do
             i=$(echo $i | sed 's/=.*//g')=$(echo ${i#*=} | base64 -di | base64 -di)
             echo ::add-mask::${i#*=}
             printf '%s\n' "$i" >> $GITHUB_ENV
@@ -29,17 +31,31 @@ jobs:
       - name: Validate credentials
         run: |
           # Secrets are now available as masked environment variable.
-          echo $CREDENTIAL3 # or ${{ env.CREDENTIAL3 }}
-          echo $CREDENTIAL4 # or ${{ env.CREDENTIAL4 }}
-        # echo $CLOUDS_ENV_B64 # or ${{ env.CLOUDS_ENV_B64 }}
-        # echo $CLOUD_PASS # or ${{ env.CLOUD_PASS }}
+          echo "$CLOUDS_ENV_2XB64"
+          echo "$CLOUDS_YAML_2XB64"
 
       - name: Check credentials escape chars if its the same as set/read on repo
         run: |
           # Secrets are now available as masked environment variable.
-          if ${{ env.CREDENTIAL3 == '^!@#$%^&*pas$word123!^%!#' }}; then
-              echo "CREDENTIAL3 matches value";
+          if ${{ env.CLOUDS_ENV_2XB64 != '' }}; then
+              echo "CLOUDS_ENV_2XB64 matches value";
           fi
-          if ${{ env.CREDENTIAL4 == 'test this secret ^!@#$%^&*pas$word123!^%!#' }}; then
-              echo "CREDENTIAL4 matches value";
+          if ${{ env.CLOUDS_YAML_2XB64 != '' }}; then
+              echo "CLOUDS_YAML_2XB64 matches value";
+          fi
+
+      - name: Create a file and check
+        run: |
+          # Secrets are now available as masked environment variable.
+          if ${{ env.CLOUDS_ENV_2XB64 != '' }}; then
+              clouds_env_b64="${{ env.CLOUDS_ENV_2XB64 }}"
+              echo "${clouds_env_b64}" | base64 --decode | base64 --decode > "${GITHUB_WORKSPACE}/cloud-env.pkrvars.hcl"
+              cat "${GITHUB_WORKSPACE}/cloud-env.pkrvars.hcl" | base64 --decode | base64 --decode | egrep -v '(password|username)'
+          fi
+
+          if ${{ env.CLOUDS_YAML_2XB64 != '' }}; then
+              mkdir -p "$HOME/.config/openstack"
+              clouds_yaml_b64="${{ env.CLOUDS_YAML_2XB64 }}"
+              echo "${clouds_yaml_b64}" | base64 --decode | base64 --decode > "$HOME/.config/openstack/clouds.yaml"
+              cat "$HOME/.config/openstack/clouds.yaml" | base64 --decode | base64 --decode | egrep -v '(cloud_pass|cloud_user)'
           fi
