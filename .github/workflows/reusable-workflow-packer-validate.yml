@@ -76,12 +76,12 @@ jobs:
           if [[ "$CLOUDS_ENV_2XB64" != '' ]]; then
               clouds_env_b64="$CLOUDS_ENV_2XB64"
               echo "${clouds_env_b64}" | base64 --decode | base64 --decode > "${GITHUB_WORKSPACE}/cloud-env.pkrvars.hcl"
-              cat "${GITHUB_WORKSPACE}/cloud-env.pkrvars.hcl" | base64 --decode | base64 --decode | egrep -v '(password|username)'
+              cat "${GITHUB_WORKSPACE}/cloud-env.pkrvars.hcl" | egrep -v '(password|username|cloud_pass|cloud_user)'
           fi
 
           if [[ "$CLOUDS_YAML_2XB64" != '' ]]; then
               mkdir -p "$HOME/.config/openstack"
               clouds_yaml_b64="$CLOUDS_YAML_2XB64"
               echo "${clouds_yaml_b64}" | base64 --decode | base64 --decode > "$HOME/.config/openstack/clouds.yaml"
-              cat "$HOME/.config/openstack/clouds.yaml" | base64 --decode | base64 --decode | egrep -v '(cloud_pass|cloud_user)'
+              cat "$HOME/.config/openstack/clouds.yaml" | egrep -v '(password|username|cloud_pass|cloud_user)'
           fi
