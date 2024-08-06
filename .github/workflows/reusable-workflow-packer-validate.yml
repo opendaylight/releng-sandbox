@@ -59,7 +59,7 @@ jobs:
         run: |
           # set -x
 
-          for kval in "$ENV_SECRETS"; do
+          for kval in $ENV_SECRETS; do
             # extract the key name
             # key="$(echo "$kval" | sed 's/=.*//g')"
             key="${kval%%=*}"
@@ -72,8 +72,8 @@ jobs:
             # mask to value
             echo ::add-mask::"$encoded_val"
             # Add to env
-            # printf '%s<<EOF\n%s\nEOF\n' "$key" "$decoded_kval" >> $GITHUB_ENV
-            printf '%s<<EOF\n%s\nEOF\n' "$key" "$encoded_val" >> $GITHUB_ENV
+            # printf '%s\n' "$key=$encoded_val" >> $GITHUB_ENV
+            printf '%s<<EOF\n%s\nEOF\n' "$key" "$encoded_val" >> "$GITHUB_ENV"
           done
 
       - name: Validate credentials
