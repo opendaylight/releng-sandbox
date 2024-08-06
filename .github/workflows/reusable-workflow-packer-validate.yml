@@ -23,14 +23,14 @@ jobs:
       - name: "Dump json secrets"
         shell: bash
         env:
-          JSON_SECRETS: ${{ secrets }}
+          JSON_SECRETS: ${{ toJSON(secrets) }}
         run: |
           echo "$JSON_SECRETS"
 
       - name: "Dump tojson secrets and decode credentials as environment variables"
         shell: bash
         env:
-          JSON_SECRETS: ${{ secrets }}
+          JSON_SECRETS: ${{ toJSON(secrets) }}
         run: |
           set -x
           readarray -t json_secrets < <(echo "$JSON_SECRETS" | jq -r '. | keys[] as $k | "\($k)=\(.[$k] )"')
