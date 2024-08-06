@@ -18,7 +18,7 @@ jobs:
   parse-credentials:
     runs-on: ubuntu-latest
     env:
-      JSON_SECRETS: ${{ toJSON(secrets) }}
+      ENV_SECRETS: ${{ secrets.ENV_SECRETS }}
     # env:
     #   ENV_SECRETS: ${{ secrets.ENV_SECRETS }}
     steps:
