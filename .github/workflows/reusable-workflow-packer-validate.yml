@@ -35,7 +35,7 @@ jobs:
         #   JSON_SECRETS: ${{ toJSON(secrets) }}
         run: |
           set -x
-          readarray -t json_secrets < <(echo "$JSON_SECRETS" | jq -r '. | keys[] as $k | "\($k)=\(.[$k] )"')
+          readarray -t json_secrets < <(echo "$JSON_SECRETS" | jq -c -r '. | keys[] as $k | "\($k)=\(.[$k] )"')
           for kval in "${json_secrets[@]}"; do
             echo "processing key-val: $kval";
             # extract the key name
