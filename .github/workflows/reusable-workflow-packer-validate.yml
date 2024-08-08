@@ -28,7 +28,7 @@ jobs:
       - name: Decode credentials as environment variables
         shell: bash
         run: |
-          # set -x
+          set -x
 
           for kval in $ENV_SECRETS; do
             # extract the key name
