@@ -19,36 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ENV_SECRETS: ${{ secrets.ENV_SECRETS }}
-    # env:
-    #   ENV_SECRETS: ${{ secrets.ENV_SECRETS }}
     steps:
-      # - name: "Dump json secrets"
-      #   shell: bash
-      #   # env:
-      #   #   JSON_SECRETS: ${{ toJSON(secrets) }}
-      #   run: |
-      #     echo "$JSON_SECRETS"
-      #
-      # - name: "Dump tojson secrets and decode credentials as environment variables"
-      #   shell: bash
-      #   # env:
-      #   #   JSON_SECRETS: ${{ toJSON(secrets) }}
-      #   run: |
-      #     set -x
-      #     readarray -t json_secrets < <(echo "$JSON_SECRETS" | jq -c -r '. | keys[] as $k | "\($k)=\(.[$k])"')
-      #     for kval in "${json_secrets[@]}"; do
-      #       echo "processing key-val: $kval";
-      #       # extract the key name
-      #       key="${kval%%=*}"
-      #       # extract the value in b64 format
-      #       encoded_val="${kval#*=}"
-      #       # mask to value
-      #       echo ::add-mask::"$encoded_val"
-      #       # Add to env
-      #       # printf '%s<<EOF\n%s\nEOF\n' "$key" "$encoded_val" >> $GITHUB_ENV
-      #       printf '%s\n' "$key=$encoded_val" >> $GITHUB_ENV
-      #     done
-
       - name: "Dump secrets"
         shell: bash
         run: |
@@ -63,17 +34,20 @@ jobs:
             # extract the key name
             # key="$(echo "$kval" | sed 's/=.*//g')"
             key="${kval%%=*}"
-            # extract the value in b64 format
-            encoded_val="${kval#*=}"
-            # decode the value
-            # decoded_val="$(echo "$encoded_val" | base64 -di | base64 -di)"
-            # construct the entire 'key=value' string
-            # decoded_kval="$(echo "$key")=$(echo "$decoded_val")"
-            # mask to value
-            echo ::add-mask::"$encoded_val"
-            # Add to env
-            # printf '%s\n' "$key=$encoded_val" >> $GITHUB_ENV
-            printf '%s<<EOF\n%s\nEOF\n' "$key" "$encoded_val" >> "$GITHUB_ENV"
+            if [[ "$key" ~= ^(CLOUDS_ENV_B64|CLOUDS_YAML_B64)$ ]]; then
+                # extract the value in b64 format
+                encoded_val="${kval#*=}"
+                # decode the value
+                # decoded_val="$(echo "$encoded_val" | base64 -di | base64 -di)"
+                # construct the entire 'key=value' string
+                # decoded_kval="$(echo "$key")=$(echo "$decoded_val")"
+                # mask to value
+                echo ::add-mask::"$encoded_val"
+                # Add to env
+                # printf '%s\n' "$key=$encoded_val" >> $GITHUB_ENV
+                printf '%s<<EOF\n%s\nEOF\n' "$key" "$encoded_val" >> "$GITHUB_ENV"
+            fi
+            continue
           done
 
       - name: Validate credentials
