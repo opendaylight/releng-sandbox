@@ -34,7 +34,7 @@ jobs:
             # extract the key name
             # key="$(echo "$kval" | sed 's/=.*//g')"
             key="${kval%%=*}"
-            if [[ "$key" =~ ^(CLOUDS_ENV_B64|CLOUDS_YAML_B64)$ ]]; then
+            if [[ "$key" =~ ^(CLOUDS_ENV_2XB64|CLOUDS_YAML_2XB64)$ ]]; then
                 # extract the value in b64 format
                 encoded_val="${kval#*=}"
                 # decode the value
