@@ -44,10 +44,12 @@ jobs:
                 # mask to value
                 echo ::add-mask::"$encoded_val"
                 # Add to env
-                # printf '%s\n' "$key=$encoded_val" >> $GITHUB_ENV
-                printf '%s<<EOF\n%s\nEOF\n' "$key" "$encoded_val" >> "$GITHUB_ENV"
+                if (( $(grep -c . <<<"$encoded_val") > 1 )); then
+                  printf '%s<<EOF\n%s\nEOF\n' "$key" "$encoded_val" >> "$GITHUB_ENV"
+                else
+                  printf '%s\n' "$key=$encoded_val" >> $GITHUB_ENV
+                fi
             fi
-            continue
           done
 
       - name: Validate credentials
