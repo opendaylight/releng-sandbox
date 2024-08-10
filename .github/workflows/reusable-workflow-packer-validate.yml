@@ -34,7 +34,7 @@ jobs:
             # extract the key name
             # key="$(echo "$kval" | sed 's/=.*//g')"
             key="${kval%%=*}"
-            if [[ "$key" =~ ^(CLOUDS_ENV_2XB64|CLOUDS_YAML_2XB64)$ ]]; then
+            if [[ "$key" =~ ^(CLOUDS_ENV.*|CLOUDS_YAML.*)$ ]]; then
                 # extract the value in b64 format
                 encoded_val="${kval#*=}"
                 # decode the value
@@ -47,7 +47,7 @@ jobs:
                 if (( $(grep -c . <<<"$encoded_val") > 1 )); then
                   printf '%s<<EOF\n%s\nEOF\n' "$key" "$encoded_val" >> "$GITHUB_ENV"
                 else
-                  printf '%s\n' "$key=$encoded_val" >> $GITHUB_ENV
+                  printf '%s\n' "$key=$encoded_val" >> "$GITHUB_ENV"
                 fi
             fi
           done
@@ -55,12 +55,14 @@ jobs:
       - name: Validate credentials
         shell: bash
         run: |
-          echo "$CLOUDS_ENV_2XB64"
-          echo "$CLOUDS_YAML_2XB64"
+          echo "CLOUDS_ENV_2XB64=$CLOUDS_ENV_2XB64"
+          echo "CLOUDS_ENV_2XB64=$CLOUDS_YAML_2XB64"
+          echo "CLOUDS_ENV_B64=$CLOUDS_ENV_B64"
+          echo "CLOUDS_YAML_B64=$CLOUDS_YAML_B64"
 
       - name: Check credentials escape chars if its the same as set/read on repo
         run: |
-          # set -x
+          set -x
           if [[ ${CLOUDS_ENV_2XB64} != '' ]]; then
               echo "CLOUDS_ENV_2XB64 matches value";
               echo "$CLOUDS_ENV_2XB64"
@@ -74,18 +76,36 @@ jobs:
       - name: Create a file and check
         shell: bash
         run: |
-          # set -x
+          set -x
 
           # Secrets are now available as masked environment variable.
+
           if [[ "$CLOUDS_ENV_2XB64" != '' ]]; then
-              clouds_env_b64="$CLOUDS_ENV_2XB64"
-              echo "${clouds_env_b64}" | base64 -di | base64 -di > "${GITHUB_WORKSPACE}/cloud-env.pkrvars.hcl"
-              cat "${GITHUB_WORKSPACE}/cloud-env.pkrvars.hcl" | egrep -v '(password|username|cloud_pass|cloud_user)'
+              clouds_env_2xb64="$CLOUDS_ENV_2XB64"
+              echo "${clouds_env_2xb64}" | base64 -di | base64 -di > "${GITHUB_WORKSPACE}/cloud-env-2x.pkrvars.hcl"
+              echo "cloud-env-2x.pkrvars.hcl"
+              cat "${GITHUB_WORKSPACE}/cloud-env-2x.pkrvars.hcl"
+          fi
+
+          if [[ "$CLOUDS_ENV_B64" != '' ]]; then
+              clouds_env_b64="$CLOUDS_ENV_B64"
+              echo "${clouds_env_b64}" | base64 -di > "${GITHUB_WORKSPACE}/cloud-env.pkrvars.hcl"
+              echo "cloud-env.pkrvars.hcl"
+              cat "${GITHUB_WORKSPACE}/cloud-env.pkrvars.hcl"
           fi
 
           if [[ "$CLOUDS_YAML_2XB64" != '' ]]; then
               mkdir -p "$HOME/.config/openstack"
-              clouds_yaml_b64="$CLOUDS_YAML_2XB64"
-              echo "${clouds_yaml_b64}" | base64 -di | base64 -di > "$HOME/.config/openstack/clouds.yaml"
-              cat "$HOME/.config/openstack/clouds.yaml" | egrep -v '(password|username|cloud_pass|cloud_user)'
+              clouds_yaml_2xb64="$CLOUDS_YAML_2XB64"
+              echo "${clouds_yaml_2xb64}" | base64 -di | base64 -di > "$HOME/.config/openstack/clouds-2x.yaml"
+              echo "clouds-2x.yaml"
+              cat "$HOME/.config/openstack/clouds-2x.yaml"
+          fi
+
+          if [[ "$CLOUDS_YAML_B64" != '' ]]; then
+              mkdir -p "$HOME/.config/openstack"
+              clouds_yaml_b64="$CLOUDS_YAML_B64"
+              echo "${clouds_yaml_b64}" |  base64 -di > "$HOME/.config/openstack/clouds.yaml"
+              echo "clouds.yaml"
+              cat "$HOME/.config/openstack/clouds.yaml"
           fi
