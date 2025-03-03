@@ -1,0 +1,102 @@
+{
+  "name": "frontend",
+  "version": "0.0.0",
+  "scripts": {
+    "openapi": "npx openapi-generator-cli generate --generator-key v3.0",
+    "ng": "./node-modules/.bin/ng",
+    "prestart": "npm run openapi",
+    "start": "ng serve --proxy-config staging.proxy.config.json --host 0.0.0.0 --port 80 --disable-host-check",
+    "prebuild": "npm run openapi",
+    "build": "ng build",
+    "pretest": "npm run openapi",
+    "test": "ng test --browsers FirefoxHeadless",
+    "prelint": "npm run openapi",
+    "lint": "ng lint",
+    "pree2e": "npm run openapi",
+    "e2e": "ng e2e",
+    "compodoc": "compodoc -p tsconfig.json",
+    "compodoc-4200": "compodoc -p tsconfig.json -s -r 4200",
+    "sonar": "sonar-scanner",
+    "licences": "license-report --output=html > ./portal_ui_licences.html --config ./license-report-config.json"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "17.3.12",
+    "@angular/cdk": "17.3.10",
+    "@angular/common": "17.3.12",
+    "@angular/compiler": "17.3.12",
+    "@angular/core": "17.3.12",
+    "@angular/forms": "17.3.12",
+    "@angular/localize": "17.3.12",
+    "@angular/platform-browser": "17.3.12",
+    "@angular/platform-browser-dynamic": "17.3.12",
+    "@angular/router": "17.3.12",
+    "@ng-bootstrap/ng-bootstrap": "^16.0.0",
+    "@ngx-translate/core": "^16.0.4",
+    "@ngx-translate/http-loader": "^16.0.1",
+    "@popperjs/core": "^2.11.8",
+    "angular-oauth2-oidc": "^17.0.2",
+    "bootstrap": "^5.3.2",
+    "license-report": "5.0.2",
+    "lodash": "4.17.21",
+    "rxjs": "~7.4.0",
+    "tslib": "2.3.0",
+    "zone.js": "0.14.3"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "17.3.11",
+    "@angular-eslint/builder": "17.3.0",
+    "@angular-eslint/eslint-plugin": "17.3.0",
+    "@angular-eslint/eslint-plugin-template": "17.3.0",
+    "@angular-eslint/schematics": "17.3.0",
+    "@angular-eslint/template-parser": "17.3.0",
+    "@angular/cli": "17.3.11",
+    "@angular/compiler-cli": "17.3.12",
+    "@openapitools/openapi-generator-cli": "^2.6.0",
+    "@types/jasmine": "~3.6.0",
+    "@types/jasminewd2": "2.0.3",
+    "@types/lodash": "4.14.188",
+    "@types/node": "18.0.0",
+    "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.59.2",
+    "@typescript-eslint/parser": "^5.59.2",
+    "eslint": "^8.39.0",
+    "git-format-staged": "3.0.0",
+    "husky": "8.0.1",
+    "jasmine-core": "~4.0.0",
+    "jasmine-spec-reporter": "~7.0.0",
+    "karma": "6.3.20",
+    "karma-chrome-launcher": "3.1.1",
+    "karma-coverage": "2.2.0",
+    "karma-coverage-istanbul-reporter": "3.0.3",
+    "karma-firefox-launcher": "2.1.2",
+    "karma-jasmine": "4.0.2",
+    "karma-jasmine-html-reporter": "1.7.0",
+    "karma-sonarqube-unit-reporter": "0.0.23",
+    "karma-spec-reporter": "0.0.33",
+    "license-check-and-add": "4.0.5",
+    "license-checker": "25.0.1",
+    "lint-staged": "12.4.1",
+    "prettier": "2.6.2",
+    "protractor": "7.0.0",
+    "sonar-scanner": "3.1.0",
+    "ts-node": "10.9.0",
+    "typescript": "^5.3.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "prettier --write .",
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{html,css}": [
+      "prettier --write .",
+      "git add"
+    ]
+  }
+}
