@@ -19,6 +19,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  issue-id:
+    permissions:
+      contents: write
+    uses: os-climate/osc-github-devops/.github/workflows/reuse-issue-id.yaml@main
+
   call-in-g2g-workflow:
     permissions:
       contents: read
