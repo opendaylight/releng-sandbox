@@ -73,7 +73,7 @@
     "karma-jasmine": "4.0.2",
     "karma-jasmine-html-reporter": "1.7.0",
     "karma-sonarqube-unit-reporter": "0.0.23",
-    "karma-spec-reporter": "0.0.33",
+    "karma-spec-reporter": "0.0.36",
     "license-check-and-add": "4.0.5",
     "license-checker": "25.0.1",
     "lint-staged": "12.4.1",
