@@ -25,6 +25,7 @@ jobs:
     uses: os-climate/osc-github-devops/.github/workflows/reuse-issue-id.yaml@main
 
   call-in-g2g-workflow:
+    needs: issue-id
     permissions:
       contents: read
       pull-requests: write
