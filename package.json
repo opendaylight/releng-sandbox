@@ -39,7 +39,7 @@
     "bootstrap": "^5.3.2",
     "license-report": "5.0.2",
     "lodash": "4.17.21",
-    "rxjs": "~7.4.0",
+    "rxjs": "~7.8.2",
     "tslib": "2.3.0",
     "zone.js": "0.14.3"
   },
