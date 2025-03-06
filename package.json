@@ -54,7 +54,7 @@
     "@angular/compiler-cli": "17.3.12",
     "@openapitools/openapi-generator-cli": "^2.6.0",
     "@types/jasmine": "~3.6.0",
-    "@types/jasminewd2": "2.0.3",
+    "@types/jasminewd2": "2.0.13",
     "@types/lodash": "4.14.188",
     "@types/node": "18.0.0",
     "@types/uuid": "^8.3.4",
